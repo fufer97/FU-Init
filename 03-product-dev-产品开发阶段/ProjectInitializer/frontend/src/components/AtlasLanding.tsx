@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
-import heroArchImg from '../assets/hero-swiss-arch.jpg';
+import { HeroBlueprint } from './HeroBlueprint';
 
 interface AtlasLandingProps {
   onStartBuild: () => void;
@@ -10,22 +10,27 @@ export const AtlasLanding: React.FC<AtlasLandingProps> = ({ onStartBuild }) => {
   return (
     <div className="bg-canvas text-ink">
       {/* Launch Hero: Clean architectural visual + crisp product title + single primary CTA */}
-      <section className="relative min-h-screen flex flex-col justify-between pt-14 overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-bottom pointer-events-none animate-hero-settle"
-          style={{ backgroundImage: `url(${heroArchImg})` }}
-        />
+      <section className="relative min-h-[100svh] flex flex-col pt-14 overflow-hidden">
+        {/* Dot-grid canvas, faded at top and bottom */}
         <div
           aria-hidden="true"
           className="absolute inset-0 pointer-events-none"
           style={{
-            background:
-              'linear-gradient(180deg, #FAFAFA 0%, rgba(250,250,250,0.92) 38%, rgba(250,250,250,0.12) 72%, rgba(250,250,250,0.88) 100%)',
+            backgroundImage: 'radial-gradient(rgba(9,9,11,0.07) 1px, transparent 1px)',
+            backgroundSize: '22px 22px',
+            maskImage: 'linear-gradient(180deg, transparent 0%, #000 25%, #000 75%, transparent 100%)',
+            WebkitMaskImage:
+              'linear-gradient(180deg, transparent 0%, #000 25%, #000 75%, transparent 100%)',
           }}
         />
+        {/* Soft cobalt light pooled under the structure */}
+        <div
+          aria-hidden="true"
+          className="absolute left-1/2 -bottom-[18%] -translate-x-1/2 w-[160%] sm:w-[85%] aspect-[2/1] pointer-events-none"
+          style={{ background: 'radial-gradient(closest-side, rgba(37,99,235,0.10), transparent)' }}
+        />
 
-        <div className="relative z-10 max-w-3xl mx-auto px-5 sm:px-6 pt-24 sm:pt-28 pb-12 sm:pb-16 text-center">
+        <div className="relative z-10 max-w-3xl mx-auto px-5 sm:px-6 pt-20 sm:pt-20 text-center">
           <h1 className="animate-fade-rise text-3xl sm:text-6xl font-medium tracking-tight text-ink leading-[1.18] sm:leading-[1.15]">
             快速构建 AI 工作区
           </h1>
@@ -48,7 +53,10 @@ export const AtlasLanding: React.FC<AtlasLandingProps> = ({ onStartBuild }) => {
           </div>
         </div>
 
-        <div className="relative z-10 h-36 sm:h-60" />
+        {/* Conceptual isometric workspace skeleton (vector, mobile-scaled) */}
+        <div className="relative flex-1 min-h-[42svh] sm:min-h-[54vh] mt-4 sm:mt-0">
+          <HeroBlueprint className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[42svh] sm:h-[54vh] max-h-[600px] aspect-[1000/560] max-w-none" />
+        </div>
       </section>
 
       {/* Three concise value pillars */}

@@ -110,6 +110,46 @@
   animation: rowHighlight 650ms ease-out;
 }
 
+/* Hero blueprint illustration motion */
+@keyframes bpRise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bpFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes bpMarch {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+.bp-rise {
+  animation: bpRise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.bp-float {
+  animation: bpFloat 6s ease-in-out 1.6s infinite;
+}
+
+.bp-march {
+  animation: bpMarch 3.2s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-rise,
   .animate-fade-rise-delay-1,
@@ -118,7 +158,10 @@
   .animate-check-pop,
   .animate-modal-in,
   .animate-backdrop-in,
-  .animate-row-highlight {
+  .animate-row-highlight,
+  .bp-rise,
+  .bp-float,
+  .bp-march {
     animation: none !important;
     transition: none !important;
   }
