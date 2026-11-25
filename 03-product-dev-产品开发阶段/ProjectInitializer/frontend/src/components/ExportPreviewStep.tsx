@@ -47,12 +47,40 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
     text: string,
     setter: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
-    try {
-      await navigator.clipboard.writeText(text);
+    let copied = false;
+
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      try {
+        await navigator.clipboard.writeText(text);
+        copied = true;
+      } catch {
+        // Fallback below for Chrome file:// or iframe sandboxes without clipboard-write
+      }
+    }
+
+    if (!copied) {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        textarea.style.left = '-9999px';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        textarea.setSelectionRange(0, text.length);
+        copied = document.execCommand('copy');
+        document.body.removeChild(textarea);
+      } catch {
+        copied = false;
+      }
+    }
+
+    if (copied) {
       setter(true);
       setTimeout(() => setter(false), 1800);
-    } catch {
-      // ignore clipboard errors under strict sandboxes
     }
   };
 
@@ -359,7 +387,7 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
           </button>
         </div>
 
-        <pre className="p-4 rounded-lg bg-subtle border border-line font-mono text-xs text-ink whitespace-pre-wrap leading-relaxed">
+        <pre className="p-4 rounded-lg bg-subtle border border-line font-mono text-xs text-ink whitespace-pre-wrap leading-relaxed select-all">
           {openingPrompt}
         </pre>
 
