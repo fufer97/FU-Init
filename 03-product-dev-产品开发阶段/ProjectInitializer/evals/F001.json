@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "scope": "F001",
+  "sources": [
+    "docs/specs/product-spec.md",
+    "docs/specs/F001-schema-and-bundle-engine/spec.md"
+  ],
+  "cases": [
+    {
+      "id": "EV-F001-001",
+      "title": "调用 resolveDevMode 与 buildInitialTree",
+      "source_ac": [
+        "AC-F001-001"
+      ],
+      "source_psc": [
+        "PSC-001",
+        "PSC-002"
+      ],
+      "given": "用户在配置中选择不同阶段组合或手动覆写开关",
+      "when": "调用 resolveDevMode 与 buildInitialTree",
+      "expected": [
+        "同时选 02+03 时自动设为 linked 模式并挂载 6 个精简核心技能；单选 03 时默认 full 模式挂载 12 个通用技能且支持手动切为 linked"
+      ],
+      "check_ref": "F001-automated-verification"
+    },
+    {
+      "id": "EV-F001-002",
+      "title": "调用 computeResolvedTree 计算目录树",
+      "source_ac": [
+        "AC-F001-002"
+      ],
+      "source_psc": [
+        "PSC-003"
+      ],
+      "given": "用户切换语言模式（zh/en/bilingual）或对同级目录进行勾选、取消、上下调序",
+      "when": "调用 computeResolvedTree 计算目录树",
+      "expected": [
+        "1 级阶段保持 01..05 固定前缀；2 级及以下 numbered:true 的已勾选目录按当前顺序严格从 1- 连续重排（双语为 1-context-业务上下文）；Raw/.agents/AGENTS.md 等免序号节点保持原名"
+      ],
+      "check_ref": "F001-automated-verification"
+    },
+    {
+      "id": "EV-F001-003",
+      "title": "调用 buildArtifactBundle",
+      "source_ac": [
+        "AC-F001-003"
+      ],
+      "source_psc": [
+        "PSC-001",
+        "PSC-004",
+        "PSC-008"
+      ],
+      "given": "用户填写或留空项目名/简介/技术栈并生成最终虚拟文件包",
+      "when": "调用 buildArtifactBundle",
+      "expected": [
+        "所有 3 级及以下已勾选文件夹自动生成导航 README.md；所有 2 级空文件夹自动生成 .gitkeep；2 级文件夹不生成 README.md；项目元信息单点注入所有 AGENTS.md 与模板且无任何赋范品牌或个人硬编码残留"
+      ],
+      "check_ref": "F001-automated-verification"
+    }
+  ],
+  "checks": [
+    {
+      "id": "F001-automated-verification",
+      "method": "command",
+      "argv": [
+        "npm",
+        "--prefix",
+        "frontend",
+        "test"
+      ],
+      "inputs": [
+        "frontend/src/types/config.ts",
+        "frontend/src/data/stageBlueprints.ts",
+        "frontend/src/engine/treeEngine.ts",
+        "frontend/src/engine/templateRenderer.ts",
+        "frontend/src/__tests__/engine.test.ts"
+      ]
+    }
+  ]
+}

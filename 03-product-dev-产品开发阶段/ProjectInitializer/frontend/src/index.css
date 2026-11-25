@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    background-color: #FAFAFA;
+    color: #09090B;
+    scroll-behavior: smooth;
+  }
+  body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Purposeful, restrained Swiss motion curves */
+@keyframes fadeRise {
+  from {
+    opacity: 0.2;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroSettle {
+  from {
+    opacity: 0.72;
+    transform: scale(1.035);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes checkPop {
+  0% {
+    transform: scale(0.84);
+  }
+  60% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes backdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rowHighlight {
+  0% {
+    background-color: rgba(37, 99, 235, 0.12);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.animate-fade-rise {
+  animation: fadeRise 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-rise-delay-1 {
+  animation: fadeRise 320ms cubic-bezier(0.22, 1, 0.36, 1) 45ms both;
+}
+
+.animate-fade-rise-delay-2 {
+  animation: fadeRise 340ms cubic-bezier(0.22, 1, 0.36, 1) 90ms both;
+}
+
+.animate-hero-settle {
+  animation: heroSettle 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-check-pop {
+  animation: checkPop 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animate-modal-in {
+  animation: modalIn 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-backdrop-in {
+  animation: backdropIn 180ms ease-out both;
+}
+
+.animate-row-highlight {
+  animation: rowHighlight 650ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-rise,
+  .animate-fade-rise-delay-1,
+  .animate-fade-rise-delay-2,
+  .animate-hero-settle,
+  .animate-check-pop,
+  .animate-modal-in,
+  .animate-backdrop-in,
+  .animate-row-highlight {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4D4D8;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A1A1AA;
+}

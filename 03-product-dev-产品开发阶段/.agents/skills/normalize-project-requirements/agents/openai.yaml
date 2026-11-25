@@ -1,0 +1,4 @@
+interface:
+  display_name: "项目需求资料规范化"
+  short_description: "将客户需求、业务约定和沟通记录统一整理为需求上下文，建立可追溯索引"
+  default_prompt: "使用 $normalize-project-requirements 筛选我指定文件夹中的客户需求、业务约定和沟通记录，统一整理到 docs/01_normalize-project-requirements/，并创建或补充当前项目的 AGENTS.md。"

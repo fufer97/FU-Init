@@ -1,0 +1,4 @@
+interface:
+  display_name: "项目验收与 Evals"
+  short_description: "把 PRD 与 Spec 验收条件转为项目用例、真实检查和验证证据"
+  default_prompt: "使用 $project-evals 根据当前项目的 PRD 和 Spec 设计验收用例，复用或补齐实际检查，并在授权范围内执行和记录结果。"

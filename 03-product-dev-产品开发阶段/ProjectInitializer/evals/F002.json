@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "scope": "F002",
+  "sources": [
+    "docs/specs/product-spec.md",
+    "docs/specs/F002-atlas-editorial-landing/spec.md"
+  ],
+  "cases": [
+    {
+      "id": "EV-F002-001",
+      "title": "查看第 1 页视觉布局与色彩字体",
+      "source_ac": [
+        "AC-F002-001"
+      ],
+      "source_psc": [
+        "PSC-005",
+        "PSC-008"
+      ],
+      "given": "用户打开应用首屏",
+      "when": "查看第 1 页视觉布局与色彩字体",
+      "expected": [
+        "页面采用暖纸白 #FAF9F6 画布、深墨绿黑 #17201B 主文字、修长衬线标题 × 等宽编号 W01..W03 × 无衬线说明，无渐变发光与装饰 Emoji"
+      ],
+      "check_ref": "F002-automated-verification"
+    },
+    {
+      "id": "EV-F002-002",
+      "title": "触发分类过滤",
+      "source_ac": [
+        "AC-F002-002"
+      ],
+      "source_psc": [
+        "PSC-005"
+      ],
+      "given": "用户点击画册分类筛选胶囊（全部方案 / 设计+开发联动 / 产品设计专精 / FDE 工程交付）",
+      "when": "触发分类过滤",
+      "expected": [
+        "激活胶囊切换为深墨实心底配浅纸字，下方 16:10 画册卡片列表即时过滤显示对应方案"
+      ],
+      "check_ref": "F002-automated-verification"
+    },
+    {
+      "id": "EV-F002-003",
+      "title": "触发 applyPreset 动作",
+      "source_ac": [
+        "AC-F002-003"
+      ],
+      "source_psc": [
+        "PSC-001",
+        "PSC-002",
+        "PSC-005"
+      ],
+      "given": "用户点击 W01、W02 或 W03 任一方案卡片（或快捷直达按钮）",
+      "when": "触发 applyPreset 动作",
+      "expected": [
+        "原子更新 presetId、selectedStages 与 devMode 并平滑进入第 2 页全局配置（或直达第 3 页目录工作台）"
+      ],
+      "check_ref": "F002-automated-verification"
+    }
+  ],
+  "checks": [
+    {
+      "id": "F002-automated-verification",
+      "method": "command",
+      "argv": [
+        "npm",
+        "--prefix",
+        "frontend",
+        "test"
+      ],
+      "inputs": [
+        "frontend/src/components/TopNav.tsx",
+        "frontend/src/components/AtlasLanding.tsx",
+        "frontend/src/__tests__/engine.test.ts"
+      ]
+    }
+  ]
+}

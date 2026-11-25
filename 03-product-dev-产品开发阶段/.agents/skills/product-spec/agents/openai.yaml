@@ -1,0 +1,6 @@
+interface:
+  display_name: "产品总规格"
+  short_description: "把确认的 PRD 落成跨 Feature 的统一产品行为合同"
+  default_prompt: "使用 $product-spec 把已确认 PRD 落盘为项目级 docs/specs/product-spec.md。"
+policy:
+  allow_implicit_invocation: true

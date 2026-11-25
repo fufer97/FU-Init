@@ -1,0 +1,6 @@
+interface:
+  display_name: "Feature Spec Planning"
+  short_description: "把确认的 PRD 与总 Spec 拆成 Feature 级规格和任务"
+  default_prompt: "使用 $feature-spec-planning 把已确认的 PRD 与 Product Spec 拆成 Feature Map 和逐 Feature 三件套。"
+policy:
+  allow_implicit_invocation: true

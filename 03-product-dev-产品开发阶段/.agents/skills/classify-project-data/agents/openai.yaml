@@ -1,0 +1,4 @@
+interface:
+  display_name: "交互式数据分类与整理"
+  short_description: "逐文件识别数据形态、读取内容并讨论业务分类，审核确认后构建整理结果"
+  default_prompt: "使用 $classify-project-data，先识别指定资料的数据形态并读取内容，再结合业务需求逐步和我讨论分类；等我审核确认具体整理方案后再构建。"

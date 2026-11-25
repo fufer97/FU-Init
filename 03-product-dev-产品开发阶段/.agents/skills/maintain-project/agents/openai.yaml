@@ -1,0 +1,3 @@
+interface:
+  display_name: "已有项目持续维护"
+  short_description: "维护已有项目的功能、实现和相关文档，按真实检查结果交付；可选接入结束检查"

@@ -1,0 +1,222 @@
+--- a/docs/03_prototype-design/design.md
++++ b/docs/03_prototype-design/design.md
+@@ -2,13 +2,15 @@
+ 
+ ## 本轮目标、依据与交付位置
+ 
+-2026-09-28，本次根据用户更新后的 `build-frontend-prototype` 重新设计并实现。用户反馈前版像功能罗列、缺少系统设计；本轮将整体业务关系落实为可持续使用的订单列表、对象工作区和岗位队列。两处 skills 内容已一致，继续使用最新方法；用户自行验看，不运行 Playwright 或其他浏览器自动化。
++2026-09-28，本次根据用户更新后的 `build-frontend-prototype` 重新设计并实现。用户反馈前版像功能罗列、缺少系统设计；本轮将整体业务关系落实为可持续使用的订单列表、对象工作区和岗位队列。两处 skills 内容已一致，继续使用最新方法；该次交付由用户自行验看，当时未运行 Playwright 或其他浏览器自动化。
+ 
+-本轮让销售、计划和相关岗位讨论三个问题：当前订单到底还差什么；系统整理的原因和可选办法是否有用；一个处理结果能否回到订单，更新卡点和下一步工作。五项核心功能均在同一套订单上下文中呈现，不做五个独立演示，也不搭建完整审批后台。
++本次隔离维护测试（变更 ID：`order-owner-filter-forward-test`）由 Agent 根据用户“基于此原型验证新需求与文档同步”的授权构造：订单列表增加“跟进岗位”筛选，按列表当前显示值匹配，并与原有条件组合；允许运行项目局部 Playwright/Chromium。该请求只适用于隔离副本，不代表客户的新业务批准，不更新需求原件或01/02业务材料。
++
++原型让销售、计划和相关岗位讨论三个问题：当前订单到底还差什么；系统整理的原因和可选办法是否有用；一个处理结果能否回到订单，更新卡点和下一步工作。五项核心功能均在同一套订单上下文中呈现，不做五个独立演示，也不搭建完整审批后台。
+ 
+ 依据：[REQ-001-02/03/05/07](../01_normalize-project-requirements/客户需求/订单履约协同_客户需求.md)、[AGR-001-01/02/04/05/07/08/09](../01_normalize-project-requirements/业务约定/林远_履约业务约定.md)、COM-002-07-01/02、COM-003-07-01/02、COM-006-07-01/02、COM-007-06-01/02，以及[现有需求看板](../02_requirement-playground/index.html)。这是已提供的业务方向；下面页面组织、模拟结果与交互仍是拟议方案，不代表甲方确认。
+ 
+-工作区：`/path/to/example-workspace`；唯一源码位于 `docs/04_frontend-prototype/`，设计与验看记录位于本目录。旧 `OrderFulfillmentPrototype/` 及 `docs/prototype/` 已按本轮授权移除；Raw、01、02、TeachingWorkbench 保留。旧源码只包含脚手架初始提交及本轮前一版生成内容，无远端或其他 worktree；一并移除旧依赖和构建产物，不建立平行备份。
++原交付工作区：`/path/to/example-workspace`；本次维护只改隔离副本。唯一源码位于 `docs/04_frontend-prototype/`，设计与验看记录位于本目录。旧 `OrderFulfillmentPrototype/` 及 `docs/prototype/` 已按本轮授权移除；Raw、01、02、TeachingWorkbench 保留。旧源码只包含脚手架初始提交及本轮前一版生成内容，无远端或其他 worktree；一并移除旧依赖和构建产物，不建立平行备份。
+ 
+ ## 整体系统设计
+ 
+@@ -83,7 +85,7 @@
+ ```text
+ 全局导航       主工作区
+ 订单           标题 / 关注分类
+-协同跟进       搜索 + 履约口径筛选 + 排序
++协同跟进       搜索 + 履约口径 + 跟进岗位筛选 + 排序
+                订单表格（局部滚动，固定表头）
+                范围 / 总数 / 页码
+ 
+@@ -101,16 +103,18 @@
+ 
+ | 页面 | 职责与空间取舍 | 浏览与返回 | 处理结果的承接 |
+ | --- | --- | --- | --- |
+-| 订单列表 | 无大段介绍和单案例推荐卡；大部分视口留给可扫描表格。客户与订单号、有效约定、数量、卡点和跟进岗位同一行 | 订单/客户/产品搜索，关注状态和履约口径筛选；默认需协调优先、再按约定时间；可按交期或客户排序；筛选重置页码，范围按真实结果计算 | 列表从同一订单状态派生；交接后显示缺料解除，部分验收后显示20/30；打开后返回保留筛选、排序、页码和表格位置 |
++| 订单列表 | 无大段介绍和单案例推荐卡；大部分视口留给可扫描表格。客户与订单号、有效约定、数量、卡点和跟进岗位同一行 | 订单/客户/产品搜索，关注状态、履约口径和跟进岗位筛选共同作用；默认需协调优先、再按约定时间；可按交期或客户排序；筛选重置页码，范围按真实结果计算 | 列表从同一订单状态派生；交接后显示缺料解除，部分验收后显示20/30；打开后返回保留筛选、排序、页码和表格位置 |
+ | 订单工作区 | 顶部固定订单身份与数量，四个页签共用同一对象；默认左侧行进展与核查表、右侧当前事项与答复要点。证据通过右侧抽屉查看，避免铺满主工作区 | 页签写入URL；回到订单列表恢复位置；从协同队列进入时有返回原队列入口 | 下一步指向准确事项；已计划、待外部结果和未发起分开表达。全量按约履约仍可有签收跟进 |
+ | 方案比较 | 主区全宽比较表；三种办法成为三列，覆盖量、时间、费用、条件、他单影响成为行，执行入口在同一行 | 比较区局部滚动，列标题固定；资料按需展开，方案状态随共享事实变化 | 跨仓方案提交计划确认后生成事项；采购核实与销售沟通可并行。回复更新对应方案范围；实际交接后转入生产事项 |
+ | 协同队列 | 左侧记录区保留队列，右侧直接办理选中事项；来源、待核对结果和相应操作在一起，无统一“确认并记录”中间弹窗 | 岗位、未完成/已处理筛选及搜索、分页真实作用；URL可定位指定事项，访问时恢复其所在有效队列；订单链接带返回来源 | 计划确认→仓储接手→交接核对在同一事项更新；生产、采购余量、资料补充等后续工作有负责人和等待结果。完成一项后允许留看结果，也可继续选择其他事项 |
++
++订单“跟进岗位”选项从当前订单行展示的岗位派生，按完整显示值匹配（例如“生产 / 质量”作为一个选项），不按初始负责岗位或协同事项岗位推断。默认“全部岗位”；业务状态变化后重新派生选项和匹配结果，已选岗位没有订单时仍保留选项并显示空结果。该条件单独存入 sessionStorage，详情返回及刷新恢复；变更条件回到第1页并清零列表滚动位置。空结果的“清除筛选”清空搜索、关注分类、履约口径与跟进岗位，继续保留原排序和协同页条件；“重置演示”仍恢复初始数据，并清空两页全部筛选、排序、页码与浏览位置。协同页继续按事项的办理岗位筛选，两个岗位条件互不覆盖。
+ 
+ 桌面目标1440×900，并兼顾常见1280×800。190px全局导航；内容标题与筛选常驻；主表格、页签内容、事项队列及办理区按职责局部滚动，不给每张小卡片设滚动条。窄屏改为自然页面滚动、上下排列，不承诺本轮移动端验看。
+ 
+ 使用深墨蓝导航、浅灰工作背景和白色记录区，正文深色14px，辅助文字12px，标题26px；琥珀表示待核实、绿色只表示相应条件已解除。采用紧凑表格、分隔线和有限强调，减少大面积装饰留白。高频筛选与页签无动画；原生dialog用于沟通输入、复查和重置，证据采用可关闭侧面dialog，支持Escape和焦点恢复。没有查看外部产品参考，本轮依据已提供业务资料与技能方法设计。
+ 
+-验看标准：18条订单真实分页并可打开；返回保留工作位置；三方案可横向对照；每个明确下一步有匹配事项或责任清楚的等待状态；调拨、采购回复和验收结果同时更新关联判断与来源。交互和空间效果交由用户实际验看。
++验看标准：18条订单真实分页并可打开；返回保留工作位置；三方案可横向对照；每个明确下一步有匹配事项或责任清楚的等待状态；调拨、采购回复和验收结果同时更新关联判断与来源。历史未验看的路径继续留待用户体验；本次新增筛选及直接受影响路径按验看记录执行浏览器测试。
+ 
+ ## 模拟方式与待讨论假设
+ 
+@@ -127,4 +131,4 @@
+ 
+ ## 交付与确认状态
+ 
+-[原型源码与启动说明](../04_frontend-prototype/README.md)。本轮按用户要求交付后自行快速验看，不运行浏览器自动化。静态语法、文件引用和服务启动检查见 [verification.md](verification.md)。尚无甲方验收或业务批准记录；收到具体反馈后迭代同一工程。
++[原型源码与启动说明](../04_frontend-prototype/README.md)。原交付按当时用户要求自行快速验看，未运行浏览器自动化；本次隔离维护按本轮授权执行浏览器验证。原技术检查与本轮具体结果见 [verification.md](verification.md)。尚无甲方验收或业务批准记录；收到具体反馈后迭代同一工程。
+--- a/docs/03_prototype-design/verification.md
++++ b/docs/03_prototype-design/verification.md
+@@ -1,4 +1,6 @@
+-# 本轮交付检查
++# 原型交付与维护检查
++
++## 原交付记录（以下状态仅适用于该次交付）
+ 
+ 2026-09-28。用户指出前版像功能罗列，随后要求同步其更新的skills，再按最新方法重新设计并生成新版。已更新同一份设计与原型，不另建并行版本。用户明确自行快速验看，因此未运行Playwright、浏览器或视觉自动化。
+ 
+@@ -35,3 +37,48 @@
+ | 沟通变化 | 补录变化标记相关判断待复查；复查后恢复推进、历史保留 | 输入、暂停、恢复和直接受影响页面的一致性 |
+ 
+ 目标桌面1440×900，兼顾1280×800；本轮未检查实际尺寸效果、点击、浏览器历史恢复、焦点或窄屏。技术检查通过只说明语法和可服务的资源正常，不代表页面可用性已观察通过，也没有甲方确认记录。
++
++
++## 隔离维护测试：订单跟进岗位筛选
++
++变更 ID：`order-owner-filter-forward-test`，2026-09-28。用户授权基于此原型验证需求变更与文档同步；具体“跟进岗位筛选”由 Agent 构造为测试场景，只修改隔离副本，不代表用户正式提出该产品需求，也不代表客户的新业务批准。上方原交付的未验证状态按当时条件保留；以下是本轮新增证据，不自动覆盖其他历史待验看项。
++
++需求与文件对应：
++
++| 本轮要求 | 实现与当前文档 | 验证方法 |
++| --- | --- | --- |
++| 按列表当前跟进岗位筛选并组合原有条件 | `assets/app.js` 增加独立 `orderOwner`、动态选项和匹配；设计与 README 更新当前用法 | 真实浏览器选择、输入、排序及行结果断言 |
++| 从详情返回保留筛选及原浏览位置 | 沿用 sessionStorage、详情链接和列表返回，新增条件并入原浏览状态 | 打开详情后点击返回；检查条件、结果、页码及滚动位置 |
++| 保留协同岗位筛选与重置语义 | 协同 `role` 不变；空结果清除新增订单条件并保留排序；全局重置仍清空两页状态 | 切换页面、协同详情返回、空结果清除、两页发起全局重置 |
++| 筛选工具栏保持可用 | `assets/styles.css` 仅允许订单工具栏按宽度换行 | 1280×800 与 1440×900 控件边界检查，1280截图实际查看 |
++
++保留文件及原因：模拟数据、三条 HTML 入口、AGENTS 无需改变；01/02、Raw、TeachingWorkbench 与 `.agents` 受保护，本次原型反馈不更新客户事实、业务批准或 Skill。仅同步原有设计、README 和本验看记录，不另建规格链。
++
++### 实际执行与结果
++
++复用已安装的 `/path/to/course-workspace/.agents/skills/excalidraw-diagram/scripts/node_modules/playwright`，启动独立 Chromium `151.0.7922.34`，未安装依赖或框架，未使用系统 Chrome 用户配置。测试脚本启动 `python3 -B -u` 静态服务，绑定随机空闲 `127.0.0.1:49354`；浏览器只允许访问该本地源。执行命令：
++
++```sh
++python3 .agents/skills/maintain-project/scripts/maintenance.py run-check --project . --id order-owner-filter-forward-test --name prototype-browser --input .codex/maintenance/prototype-browser.cjs --input docs/04_frontend-prototype/assets/mock-data.js --input docs/04_frontend-prototype/index.html --input docs/04_frontend-prototype/order.html --input docs/04_frontend-prototype/followups.html -- node .codex/maintenance/prototype-browser.cjs
++```
++
++实际于 2026-09-28 19:25:20–19:25:23（Asia/Shanghai）执行，命令退出0，47项断言通过，浏览器没有脚本异常。方法为页面真实输入、选择、点击、滚动与导航，读取已呈现结果及保存的浏览状态核对；未向 sessionStorage 注入模拟业务变化。业务岗位变化全部经现有办理按钮触发。
++
++| 路径 | 实际观察 |
++| --- | --- |
++| 默认与组合筛选 | 初始18条每页8行；交付岗位匹配10条。搜索“模块”+“跟进中”+“到货”+“交付”按客户名显示041、065、026，改交付时间排序为026、041、065 |
++| 详情返回与刷新 | 搜索、分类、口径、岗位、排序和页码均恢复；交付岗位第2页返回仍为9–10/共10条；表格滚动位置恢复；刷新后岗位仍为交付 |
++| 分页与条件变化 | 交付岗位真实分2页；第2页改生产岗位后回第1页、滚动清零、得到6条结果 |
++| 协同原路径 | 采购岗位+“北辰”只显示采购事项，订单筛选不覆盖办理岗位、状态、搜索、页码或选中项；协同详情返回仍保留采购岗位 |
++| 空结果与清除 | 不存在的搜索显示空结果；清除搜索、分类、口径、岗位、页码与滚动，保留客户排序及协同采购/北辰条件 |
++| 当前岗位来源 | 北辰初始计划；确认调拨后原计划筛选为空且选中值保留，仓储筛选显示北辰；接手并核对交接后进入生产；接受生产安排后由单一生产结果移出，完整“生产 / 质量”选项准确匹配北辰 |
++| 重置演示 | 恢复初始业务数据、订单和协同两页筛选、默认排序与页码、浏览位置；北辰恢复计划；从协同页点击重置也清空订单岗位 |
++| 桌面呈现 | 两个桌面尺寸的4个工具栏控件均完整位于工具栏内；实际查看1280截图，搜索、口径、岗位、排序、表格及分页无相互覆盖，组合岗位显示完整 |
++
++### 证据、恢复与限制
++
++- 原始输出：`.codex/maintenance/logs/order-owner-filter-forward-test-prototype-browser.txt`；结构结果：`.codex/maintenance/browser-results.json`；测试脚本：`.codex/maintenance/prototype-browser.cjs`。运行记录对实现、HTML、模拟数据与测试脚本保存输入指纹。
++- 页面截图：`.codex/maintenance/orders-1280.png`、`orders-1440.png`、`current-owner-combined.png`。其中1280初始列表及组合岗位截图已实际查看；1440只作尺寸证据保留，没有单独做人工视觉审阅。
++- `.codex/maintenance/` 约460 KB，保存本轮临时证据，目录由 `.gitignore` 忽略。没有依赖树、构建输出、录屏或另一个产品工程；浏览器与本地静态服务已在脚本 `finally` 中关闭并等待退出，隔离副本保留供审阅，统一清理前不删除。
++- 语义审阅：新岗位条件采用订单当前显示值，订单/协同岗位状态分开；空结果清除继续保留排序，完整重置继续恢复原数据；现有设计与 README 的当前描述一致，原交付“不运行浏览器自动化”明确归于历史条件。
++- 本轮没有验证移动端、其他浏览器、关闭标签页后的恢复、完整键盘无障碍或所有历史业务路径。采购回复、部分验收等未受影响场景不据此次筛选测试标为全面通过。仍为模拟原型，未接入真实后台、账号或外部业务系统。
+--- a/docs/04_frontend-prototype/README.md
++++ b/docs/04_frontend-prototype/README.md
+@@ -7,15 +7,15 @@
+ 在工作区根目录运行：
+ 
+ ```sh
+-cd /path/to/example-workspace
++# 在包含 docs/ 的当前工作区或隔离副本根目录运行
+ python3 -B -m http.server 5197 --bind 127.0.0.1 --directory docs/04_frontend-prototype
+ ```
+ 
+-打开 <http://127.0.0.1:5197/>。本轮复用该端口原有的本项目静态服务，已保留运行，PID为83323；不再需要时可停止该进程。通过HTTP访问，不直接双击HTML。无需安装依赖或构建。
++打开 <http://127.0.0.1:5197/>。端口被占用时先确认服务归属，或为当前副本选择独立空闲端口；在启动服务的终端按 Ctrl+C 停止。通过HTTP访问，不直接双击HTML。无需安装依赖或构建。
+ 
+ ## 建议验看
+ 
+-1. **日常找单**：18条模拟订单，每页8条；试用搜索、关注分类、履约口径和排序。在第二页打开订单，再点击“返回订单列表”，查看筛选、排序、页码与位置是否保留。
++1. **日常找单**：18条模拟订单，每页8条；试用搜索、关注分类、履约口径、跟进岗位和排序组合。“跟进岗位”按订单行当前展示的完整岗位匹配（包括“生产 / 质量”）；业务状态变化会同步匹配结果，空结果可“清除筛选”，清除后仍保留排序。在第二页打开订单，再点击“返回订单列表”，查看包括跟进岗位在内的筛选、排序、页码与位置是否保留。
+ 2. **判断与比较**：打开北辰装备，查看订单行和交付条件；点击依据打开侧栏。在“方案比较”横向查看跨仓、采购与分批的数量、时间、费用和影响。
+ 3. **岗位接续**：在跨仓方案列“提交计划确认”，随后“办理调拨事项”。左侧保留事项队列，右侧依次由计划确认、仓储接手、仓储核对交接记录。每一步在办理区直接操作，操作岗位明确显示。
+ 4. **结果回到订单**：核对交接后，物料可分配8→20只、缺口12→0只，原订单仍已发40台；从后续工作继续核实生产安排，再等待实际测试和质量结果。
+@@ -23,7 +23,7 @@
+ 6. **部分验收**：在协同队列打开澄星仪器事项，记录20台验收通过；回到订单查看20/30的进展，剩余10台由交付继续补资料。
+ 7. **沟通变化**：补录沟通并勾选条件变化。订单与相关事项标记待复查；记录复查结论后继续。山岚在途、景川配置与禾风签收都有对应负责岗位和等待结果的事项。
+ 
+-“协同记录”在订单内查看相同事项；“关联资料”按版本和业务时点集中查看。全局协同页可按岗位、状态和文本搜索，每页6项。从事项进入订单再返回，保留原工作队列上下文。
++“协同记录”在订单内查看相同事项；“关联资料”按版本和业务时点集中查看。全局协同页可按办理岗位、状态和文本搜索，其岗位条件与订单列表的跟进岗位互不覆盖，每页6项。从事项进入订单再返回，保留原工作队列上下文。
+ 
+ ## 模拟边界与恢复
+ 
+@@ -31,7 +31,7 @@
+ 
+ 调拨、供应回复、验收与生产安排使用预置结果；其他等待事项可以补录进展，未扩展为完整业务编辑与状态机。办理岗位用于表达职责，不代表真实账号权限。自由文字不会自动改动业务数量，涉及条件变化时由相关岗位复查。
+ 
+-会话数据与浏览状态保存在sessionStorage，跨页和刷新保留；关闭标签页后的恢复由浏览器会话决定，不作为长期存储。本次重设计使用新会话版本；底部“重置演示”清空本版操作、筛选和页码，恢复初始数据。
++会话数据与浏览状态保存在sessionStorage，跨页和刷新保留；关闭标签页后的恢复由浏览器会话决定，不作为长期存储。本次重设计使用新会话版本；底部“重置演示”清空本版操作、两页筛选（含新增跟进岗位）、排序、页码及浏览位置，恢复初始数据。
+ 
+ ## 文件与实际检查
+ 
+@@ -44,6 +44,6 @@
+ 
+ [设计记录](../03_prototype-design/design.md)保留需求归属、空间结构、输入/处理/输出、流程图和待确认假设。[验看记录](../03_prototype-design/verification.md)区分实际技术检查和待用户体验内容。
+ 
+-已做脚本语法、本地资源引用与HTTP内容一致性检查。按用户要求，没有运行Playwright或其他浏览器自动化，实际点击、视觉与返回体验尚待用户验看。
++原交付已做脚本语法、本地资源引用与HTTP内容一致性检查，当时按用户要求未运行浏览器自动化。本次隔离维护变更 `order-owner-filter-forward-test` 已获准使用项目局部 Playwright/Chromium，具体交互结果见验看记录；未覆盖的原型体验保留待验看状态。本次为测试需求，不构成客户业务批准。
+ 
+-原型源码与说明约100 KB，唯一位置为本目录；没有依赖树、构建输出、截图、录屏、备份或新运行目录。停止静态服务即可结束预览，保留源码可随时按上述命令重启。
++原型源码与说明约100 KB，唯一源码位置为本目录；本次没有安装依赖或新增构建步骤。临时测试脚本、截图和检查输出位于忽略目录 `.codex/maintenance/`，用于本轮审阅，审阅完成后可删除；正式结果保留在验看记录。测试使用独立临时服务和浏览器，结束后停止；源码可随时按上述命令重启。
+--- a/docs/04_frontend-prototype/assets/app.js
++++ b/docs/04_frontend-prototype/assets/app.js
+@@ -8,7 +8,7 @@
+ const chosen = orders.find(o => o.id === params.get('id')) || orders[0];
+ let state = load();
+ const UIKEY = KEY+'-view';
+-const defaults = {query:'', group:'全部订单', basis:'全部口径', sort:'priority', orderPage:1, orderScroll:0, lastOrder:'', role:'全部岗位', task:'未完成', taskQuery:'', taskPage:1, selectedTask:''};
++const defaults = {query:'', group:'全部订单', basis:'全部口径', orderOwner:'全部岗位', sort:'priority', orderPage:1, orderScroll:0, lastOrder:'', role:'全部岗位', task:'未完成', taskQuery:'', taskPage:1, selectedTask:''};
+ function loadUI() { try { return {...defaults,...JSON.parse(sessionStorage.getItem(UIKEY)||'{}')}; } catch { return {...defaults}; } }
+ let filters = loadUI();
+ if(params.get('task')) { filters.selectedTask=params.get('task'); filters.role='全部岗位'; filters.task='全部'; filters.taskQuery=''; }
+@@ -119,14 +119,15 @@
+ function groupOf(o) { const s=situation(o); return s.tone==='amber'?'需要协调':totals(o).remaining===0?'已履约':'跟进中'; }
+ function matchingOrders() {
+   const priority={需要协调:0,跟进中:1,已履约:2};
+-  return orders.filter(o=>(filters.group==='全部订单'||groupOf(o)===filters.group)&&(filters.basis==='全部口径'||o.basis===filters.basis)&&`${o.id} ${o.customer} ${o.products}`.toLowerCase().includes(filters.query.trim().toLowerCase())).sort((a,b)=>filters.sort==='customer'?a.customer.localeCompare(b.customer,'zh-CN'):filters.sort==='due'?a.due.localeCompare(b.due):(priority[groupOf(a)]-priority[groupOf(b)]||a.due.localeCompare(b.due)));
++  return orders.filter(o=>(filters.group==='全部订单'||groupOf(o)===filters.group)&&(filters.basis==='全部口径'||o.basis===filters.basis)&&(filters.orderOwner==='全部岗位'||situation(o).owner===filters.orderOwner)&&`${o.id} ${o.customer} ${o.products}`.toLowerCase().includes(filters.query.trim().toLowerCase())).sort((a,b)=>filters.sort==='customer'?a.customer.localeCompare(b.customer,'zh-CN'):filters.sort==='due'?a.due.localeCompare(b.due):(priority[groupOf(a)]-priority[groupOf(b)]||a.due.localeCompare(b.due)));
+ }
+ function pagination(total,current,size,action) {
+   const pages=Math.max(1,Math.ceil(total/size));
+   return `<div class="pagination"><span>${total?`${(current-1)*size+1}–${Math.min(current*size,total)}`:'0'} / 共 ${total} 条</span><div>${button('上一页',action,String(current-1),true,current===1)}${Array.from({length:pages},(_,i)=>`<button class="page-number ${current===i+1?'active':''}" data-action="${action}" data-id="${i+1}" aria-label="第${i+1}页" ${current===i+1?'aria-current="page"':''}>${i+1}</button>`).join('')}${button('下一页',action,String(current+1),true,current===pages)}</div><span>每页 ${size} 条</span></div>`;
+ }
+ function renderOrders() {
+-  main.innerHTML=`<section class="page-heading"><div><div class="eyebrow">订单管理 / 近期交付</div><h1>订单</h1></div><div class="asof">${icon('clock')}资料截至 ${snapshot}</div></section><section class="workspace order-workspace"><div class="list-tabs">${['全部订单','需要协调','跟进中','已履约'].map(g=>`<button data-action="filter-order" data-id="${g}" class="${filters.group===g?'active':''}">${g}<b>${g==='全部订单'?orders.length:orders.filter(o=>groupOf(o)===g).length}</b></button>`).join('')}</div><div class="toolbar"><label class="search">${icon('search')}<input id="order-search" aria-label="搜索订单、客户、产品" value="${e(filters.query)}" placeholder="搜索订单、客户或产品"></label><label class="select-label">履约口径<select id="basis-filter">${['全部口径','发运','到货','验收'].map(v=>option(v,v,filters.basis)).join('')}</select></label><label class="select-label sort">排序<select id="order-sort">${[['priority','需协调优先'],['due','交付时间由近到远'],['customer','客户名称']].map(([v,l])=>option(v,l,filters.sort)).join('')}</select></label></div><div id="order-results" class="results"></div></section>`;
++  const owners=[...new Set([...orders.map(o=>situation(o).owner),filters.orderOwner])].filter(owner=>owner!=='全部岗位').sort((a,b)=>a.localeCompare(b,'zh-CN'));
++  main.innerHTML=`<section class="page-heading"><div><div class="eyebrow">订单管理 / 近期交付</div><h1>订单</h1></div><div class="asof">${icon('clock')}资料截至 ${snapshot}</div></section><section class="workspace order-workspace"><div class="list-tabs">${['全部订单','需要协调','跟进中','已履约'].map(g=>`<button data-action="filter-order" data-id="${g}" class="${filters.group===g?'active':''}">${g}<b>${g==='全部订单'?orders.length:orders.filter(o=>groupOf(o)===g).length}</b></button>`).join('')}</div><div class="toolbar"><label class="search">${icon('search')}<input id="order-search" aria-label="搜索订单、客户、产品" value="${e(filters.query)}" placeholder="搜索订单、客户或产品"></label><label class="select-label">履约口径<select id="basis-filter">${['全部口径','发运','到货','验收'].map(v=>option(v,v,filters.basis)).join('')}</select></label><label class="select-label">跟进岗位<select id="order-owner-filter">${['全部岗位',...owners].map(owner=>option(owner,owner,filters.orderOwner)).join('')}</select></label><label class="select-label sort">排序<select id="order-sort">${[['priority','需协调优先'],['due','交付时间由近到远'],['customer','客户名称']].map(([v,l])=>option(v,l,filters.sort)).join('')}</select></label></div><div id="order-results" class="results"></div></section>`;
+   renderOrderRows();
+ }
+ function renderOrderRows() {
+@@ -267,7 +268,7 @@
+   'choose-transfer':()=>actions['confirm-choose'](),
+   split:()=>actions['confirm-split'](),
+   'filter-task':id=>{filters.task=id;filters.taskPage=1;filters.selectedTask='';saveUI();renderFollowups();},
+-  'clear-filter':()=>{filters.query='';filters.group='全部订单';filters.basis='全部口径';filters.orderPage=1;filters.orderScroll=0;saveUI();renderOrders();},
++  'clear-filter':()=>{filters.query='';filters.group='全部订单';filters.basis='全部口径';filters.orderOwner='全部岗位';filters.orderPage=1;filters.orderScroll=0;saveUI();renderOrders();},
+   evidence:showEvidence,
+   'confirm-choose':()=>{state.transfer='proposed';log(primary,'选择跨仓补料方案','12只、480元、今天14:00的交接窗口提交计划确认；尚未执行。');done('方案已选择，计划确认事项已建立。');},
+   'confirm-approve':()=>{state.transfer='approved';log(primary,'计划已确认调拨范围','已确认本次12只与480元费用，由仓储办理实际交接。');done('计划确认已记录，等待仓储接手。');},
+@@ -297,6 +298,7 @@
+   if(event.target.id==='task-search'){filters.taskQuery=event.target.value;filters.taskPage=1;filters.selectedTask='';renderTaskRows();}
+ });
+ document.addEventListener('change',event=>{
++  if(event.target.id==='order-owner-filter'){filters.orderOwner=event.target.value;filters.orderPage=1;filters.orderScroll=0;renderOrderRows();}
+   if(event.target.id==='role-filter'){filters.role=event.target.value;filters.taskPage=1;filters.selectedTask='';renderTaskRows();}
+   if(['basis-filter','order-sort'].includes(event.target.id)){filters[event.target.id==='basis-filter'?'basis':'sort']=event.target.value;filters.orderPage=1;filters.orderScroll=0;renderOrderRows();}
+ });
+--- a/docs/04_frontend-prototype/assets/styles.css
++++ b/docs/04_frontend-prototype/assets/styles.css
+@@ -12,3 +12,5 @@
+ @media(max-width:1050px){body{grid-template-columns:148px minmax(0,1fr)}.brand{font-size:16px;margin-left:3px}.brand small{font-size:7px;letter-spacing:1.5px}.nav-label{padding-left:10px}#header nav a{font-size:12px;gap:8px;padding:12px 10px}#header nav .icon{height:16px;width:16px}.overview-layout{grid-template-columns:1fr}.context-aside{border-left:0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:0 22px}.latest-event{display:none}.aside-section{border:0}.order-summary small{font-size:10px}.order-summary>div{padding:0 13px}.toolbar .search{width:230px}.select-label{font-size:11px}.tasks-workspace>.toolbar{flex-wrap:wrap;gap:10px}.tasks-workspace .task-search{flex:1}.task-detail-heading{flex-wrap:wrap;gap:7px;padding-top:17px}.task-detail-heading>.badge{margin:0}.task-action-bar .btn{font-size:11px;padding:8px 10px}.task-facts{gap:8px}.task-facts strong{font-size:11px}.task-order>span{gap:5px}.task-layout{grid-template-columns:290px minmax(0,1fr)}.asof{display:none}.result-sheet{padding:15px}.result-sheet h3{font-size:13px}.task-scroll{padding:0 16px 18px}.task-facts{padding:15px 16px}.task-order{margin:0 16px}.task-detail-heading{padding-left:16px;padding-right:16px}.task-action-bar{padding:13px 16px}}
+ @media(max-width:760px){body{height:auto;min-height:100dvh;overflow:auto;display:block}#header{padding:15px 17px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:18px}.brand{font-size:16px;margin:0}.brand small,.nav-label,.nav-bottom{display:none}.brand>span{width:30px;height:30px}#header nav{flex-direction:row;gap:5px}#header nav a{font-size:12px;padding:10px}#header nav a .icon,#header nav a>span{display:none}main{padding:24px 16px 0;overflow:visible;min-height:calc(100dvh - 108px)}.page-heading{margin-bottom:21px}h1{font-size:25px}.workspace{overflow:hidden;min-height:450px;flex:auto}.list-tabs{gap:22px;padding:0 16px;min-height:53px}.list-tabs button{font-size:12px}.list-tabs b{font-size:10px;margin-left:5px}.toolbar{padding:14px;flex-wrap:wrap;gap:10px}.toolbar .search{width:100%}.select-label{flex:1}.select-label select{flex:1;min-width:80px;font-size:12px}.sort{margin:0}.table-scroll{max-height:660px;overflow:auto}.pagination{padding:14px;gap:8px;font-size:11px;flex-wrap:wrap}.pagination>span:last-child{display:none}footer{font-size:9px;padding:17px 16px;gap:5px}footer button{font-size:9px}.detail-heading h1{font-size:22px;gap:8px}.detail-heading h1 .badge{font-size:10px}.detail-heading p{font-size:11px}.detail-heading .btn{font-size:11px;padding:8px 10px}.order-summary{grid-template-columns:1fr 1fr;padding:16px 0;gap:18px 0}.order-summary>div{padding:0 17px}.order-summary>div:nth-child(2){border:0}.order-summary>div:first-child small{display:inline;margin-left:7px}.order-summary>div:first-child strong{font-size:16px}.order-summary strong{font-size:23px}.order-summary span{font-size:11px;margin-bottom:7px}.detail-tabs{gap:23px;padding:0 17px}.detail-tabs a{font-size:12px}.detail-tabs b{font-size:9px}.detail-content{overflow:visible;display:block}.overview-main{padding:0 16px 20px}.line-table{min-width:520px}.condition{grid-template-columns:1fr;gap:10px;padding:18px 0}.context-aside{grid-template-columns:1fr;gap:0;padding:0 19px}.aside-section{border-bottom:1px solid var(--line)}.comparison-scroll{overflow:auto;max-height:650px}.compare-heading{padding:20px 18px}.compare-heading h2{font-size:15px}.compare-heading p{font-size:11px}.comparison{min-width:880px}.files-table{min-width:810px}.detail-content:has(.files-table){overflow:auto}.files-heading{padding:22px 18px;min-width:500px}.task-layout{grid-template-columns:1fr;height:auto;overflow:visible}.queue{border-right:0}.queue-list{max-height:350px}.task-detail{border-top:1px solid var(--line);min-height:400px;overflow:visible}.task-scroll{overflow:visible;max-height:none}.task-facts{padding:17px 21px}.task-order{margin:0 21px}.task-detail-heading{padding:23px 21px 16px}.task-scroll{padding:0 21px 23px}.task-action-bar{position:sticky;bottom:0;padding:14px 21px;z-index:2}.task-layout .queue .pagination{min-height:0}.queue .pagination>span:first-child{flex-basis:auto}.task-detail-heading h2{font-size:17px}.task-detail-heading>.badge{margin-top:22px}.task-order small{display:inline}.tasks-workspace>.toolbar{padding:14px}.tasks-workspace .task-search{flex-basis:100%;order:3}.tasks-workspace .select-label{flex:1}.tasks-workspace .segmented{gap:0}.segmented button{font-size:11px;padding:6px 8px}.result-sheet h3{font-size:14px}.queue-content{overflow:visible}.change-banner{font-size:11px;flex-wrap:wrap}.change-banner .btn{font-size:11px;padding:6px 9px}#toast{left:50%;bottom:20px;font-size:12px;padding:12px 17px}.evidence-drawer{width:100%;max-width:100vw;padding:34px 25px}dialog{padding:25px}dialog h2{font-size:18px}.no-plan{padding:32px 20px}.no-plan>div{padding:15px}.breadcrumb{font-size:11px}}
+ @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}button:active{transform:none}}
++
++.order-workspace>.toolbar{flex-wrap:wrap}
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1 @@
++/.codex/maintenance/

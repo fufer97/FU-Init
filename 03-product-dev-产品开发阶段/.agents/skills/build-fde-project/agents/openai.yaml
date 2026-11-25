@@ -1,0 +1,4 @@
+interface:
+  display_name: "FDE 项目构建与交付"
+  short_description: "面向 FDE 项目交付，初始化标准工程并完成已授权的产品开发"
+  default_prompt: "使用 $build-fde-project 先准备外层 Raw 客户原始资料目录，再引导创建同级的大驼峰开发项目，初始化带内置 FF Logo 和统一署名的工程，落盘 PRD、Product Spec 与 Feature 三件套，再实现已授权范围。"

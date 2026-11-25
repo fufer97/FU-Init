@@ -1,0 +1,39 @@
+# 操作系统生成文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 第三方原始参考资料（本地保留，不上传至 GitHub）
+02-product-design-产品设计阶段/7-reference-参考资料/
+
+# 环境变量与本地密钥
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# 前端依赖与构建缓存
+node_modules/
+03-product-dev-产品开发阶段/ProjectInitializer/frontend/dist/
+.vite/
+.cache/
+
+# Python 缓存与虚拟环境
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# 日志与临时文件
+*.log
+npm-debug.log*
+.tmp/
+*.swp
+*.swo
+
+# 编辑器本地配置
+.vscode/*
+!.vscode/extensions.json
+.idea/

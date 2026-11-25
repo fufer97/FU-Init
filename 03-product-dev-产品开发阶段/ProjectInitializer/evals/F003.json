@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "scope": "F003",
+  "sources": [
+    "docs/specs/product-spec.md",
+    "docs/specs/F003-stage-and-tree-workbench/spec.md"
+  ],
+  "cases": [
+    {
+      "id": "EV-F003-001",
+      "title": "更新全局 ProjectInitConfig",
+      "source_ac": [
+        "AC-F003-001"
+      ],
+      "source_psc": [
+        "PSC-001",
+        "PSC-002",
+        "PSC-003"
+      ],
+      "given": "用户在第 2 页修改语言、主力 Agent、五阶段勾选或手动切换开发精简模式，并填写可选项目信息",
+      "when": "更新全局 ProjectInitConfig",
+      "expected": [
+        "至少保留 1 个阶段（防空保护 EX-01）；双模式状态横幅准确反映 6 技能精简模式或 12 技能完整模式；主力 Agent 切换准确决定 .agents/rules/ 与 .antigravityignore 生成"
+      ],
+      "check_ref": "F003-automated-verification"
+    },
+    {
+      "id": "EV-F003-002",
+      "title": "触发树节点突变操作",
+      "source_ac": [
+        "AC-F003-002"
+      ],
+      "source_psc": [
+        "PSC-003",
+        "PSC-004",
+        "PSC-006"
+      ],
+      "given": "用户在第 3 页左栏勾选/取消节点、点击上移/下移调整同级顺序、或新增/重命名自定义节点",
+      "when": "触发树节点突变操作",
+      "expected": [
+        "UI 勾选树隐藏 3 级 README.md 与 .gitkeep；锁定节点不可取消（EX-02）；同级 numbered:true 目录序号实时从 1- 重排；右栏完整目录树与 AGENTS.md 索引表同步刷新"
+      ],
+      "check_ref": "F003-automated-verification"
+    },
+    {
+      "id": "EV-F003-003",
+      "title": "查看右栏文件全文预览或导入 JSON",
+      "source_ac": [
+        "AC-F003-003"
+      ],
+      "source_psc": [
+        "PSC-001",
+        "PSC-006",
+        "PSC-008"
+      ],
+      "given": "用户在第 3 页点击任意文件节点或执行 JSON 配置导入/导出",
+      "when": "查看右栏文件全文预览或导入 JSON",
+      "expected": [
+        "右栏实时展示注入项目名/技术栈/当前语言路径后的完整文件正文并支持一键复制；非法 JSON 导入被安全拦截并提示中文错误（EX-03）"
+      ],
+      "check_ref": "F003-automated-verification"
+    }
+  ],
+  "checks": [
+    {
+      "id": "F003-automated-verification",
+      "method": "command",
+      "argv": [
+        "npm",
+        "--prefix",
+        "frontend",
+        "test"
+      ],
+      "inputs": [
+        "frontend/src/components/GlobalConfigStep.tsx",
+        "frontend/src/components/TreeWorkbenchStep.tsx",
+        "frontend/src/__tests__/engine.test.ts"
+      ]
+    }
+  ]
+}

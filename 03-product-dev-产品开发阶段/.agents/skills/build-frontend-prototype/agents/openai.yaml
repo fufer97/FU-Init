@@ -1,0 +1,4 @@
+interface:
+  display_name: "用体验原型对齐需求"
+  short_description: "把需求转成整体应用体验，设计页面空间、列表浏览与工作承接，用可点击原型帮助甲方对齐"
+  default_prompt: "使用 $build-frontend-prototype，结合需求与呈现意图形成整体业务和信息架构，按包内产品设计方法细化页面空间、列表浏览与工作承接，再以模拟交互和 Emil 细节打磨完成可点击原型，按 03/04 约定交付并验看，不开发完整系统。"
