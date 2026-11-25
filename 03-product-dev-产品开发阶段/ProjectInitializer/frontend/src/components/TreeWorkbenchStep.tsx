@@ -135,7 +135,7 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
         <div className="text-xs font-medium text-ink">
           在 {addForm.targetLabel} 下新增文件夹
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <input
             type="text"
             required
@@ -191,36 +191,38 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
 
     return (
       <>
-        <div className="flex items-center justify-between gap-2 py-2.5 px-3 rounded-lg hover:bg-subtle/60 transition-colors duration-150">
-          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-2 py-2.5 px-2.5 sm:px-3 rounded-lg hover:bg-subtle/60 transition-colors duration-150">
+          <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
             <span
               aria-label="必需配置"
-              className="w-4 h-4 rounded flex items-center justify-center border shrink-0 bg-subtle border-line text-ink-muted"
+              className="mt-0.5 sm:mt-0 w-4 h-4 rounded flex items-center justify-center border shrink-0 bg-subtle border-line text-ink-muted"
             >
               <Lock className="w-2.5 h-2.5" strokeWidth={1.5} />
             </span>
-            <Shield className="w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
-            <div className="min-w-0">
-              <div className="font-mono text-xs text-ink truncate">.antigravityignore</div>
-              <p className="text-xs text-ink-muted truncate">
+            <Shield className="mt-0.5 sm:mt-0 w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
+            <div className="min-w-0 flex-1">
+              <div className="font-mono text-xs text-ink break-words sm:truncate">
+                .antigravityignore
+              </div>
+              <p className="text-xs text-ink-muted leading-snug sm:truncate">
                 Antigravity 忽略配置（空基础模板）
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-2 py-2.5 px-3 rounded-lg hover:bg-subtle/60 transition-colors duration-150">
-          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-2 py-2.5 px-2.5 sm:px-3 rounded-lg hover:bg-subtle/60 transition-colors duration-150">
+          <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
             <span
               aria-label="必需配置"
-              className="w-4 h-4 rounded flex items-center justify-center border shrink-0 bg-subtle border-line text-ink-muted"
+              className="mt-0.5 sm:mt-0 w-4 h-4 rounded flex items-center justify-center border shrink-0 bg-subtle border-line text-ink-muted"
             >
               <Lock className="w-2.5 h-2.5" strokeWidth={1.5} />
             </span>
-            <FileCode2 className="w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
-            <div className="min-w-0">
-              <div className="font-mono text-xs text-ink truncate">{rulePath}</div>
-              <p className="text-xs text-ink-muted truncate">{ruleDesc}</p>
+            <FileCode2 className="mt-0.5 sm:mt-0 w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
+            <div className="min-w-0 flex-1">
+              <div className="font-mono text-xs text-ink break-words sm:truncate">{rulePath}</div>
+              <p className="text-xs text-ink-muted leading-snug sm:truncate">{ruleDesc}</p>
             </div>
           </div>
         </div>
@@ -247,22 +249,22 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
       return (
         <div key={node.id}>
           <div
-            className={`group flex items-center justify-between gap-2 py-2.5 px-3 rounded-lg transition-colors duration-150 ${
+            className={`group flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 py-2.5 px-2.5 sm:px-3 rounded-lg transition-colors duration-150 ${
               isFlashing
                 ? 'animate-row-highlight'
                 : node.checked
                 ? 'hover:bg-subtle/80'
                 : 'opacity-45 hover:opacity-75'
             }`}
-            style={{ paddingLeft: `${depth * 20 + 12}px` }}
+            style={{ paddingLeft: `${depth * 16 + 10}px` }}
           >
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
               <button
                 type="button"
                 disabled={node.locked}
                 onClick={() => onToggleNode(stageId, node.id)}
                 aria-label={node.locked ? '必需文件' : `切换 ${node.displayName}`}
-                className={`w-4 h-4 rounded flex items-center justify-center border shrink-0 transition-colors duration-150 ${
+                className={`mt-0.5 sm:mt-0 w-4 h-4 rounded flex items-center justify-center border shrink-0 transition-colors duration-150 ${
                   node.locked
                     ? 'bg-subtle border-line text-ink-muted cursor-not-allowed'
                     : node.checked
@@ -278,18 +280,18 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
               </button>
 
               {isStage03SkillsFolder ? (
-                <FolderOpen className="w-4 h-4 text-accent/80 shrink-0" strokeWidth={1.5} />
+                <FolderOpen className="mt-0.5 sm:mt-0 w-4 h-4 text-accent/80 shrink-0" strokeWidth={1.5} />
               ) : node.kind === 'folder' ? (
-                <Folder className="w-4 h-4 text-accent/80 shrink-0" strokeWidth={1.5} />
+                <Folder className="mt-0.5 sm:mt-0 w-4 h-4 text-accent/80 shrink-0" strokeWidth={1.5} />
               ) : isGitignore ? (
-                <Shield className="w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
+                <Shield className="mt-0.5 sm:mt-0 w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
               ) : (
-                <FileText className="w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
+                <FileText className="mt-0.5 sm:mt-0 w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
               )}
 
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs text-ink truncate">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                  <span className="font-mono text-xs text-ink break-words sm:truncate">
                     {isStage03SkillsFolder
                       ? '.agents/skills/'
                       : `${node.displayName}${node.kind === 'folder' ? '/' : ''}`}
@@ -305,12 +307,14 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-ink-muted truncate">{node.description}</p>
+                <p className="text-xs text-ink-muted leading-snug sm:truncate">
+                  {node.description}
+                </p>
               </div>
             </div>
 
             {!node.locked && !isGitignore && (
-              <div className="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity duration-150 shrink-0">
+              <div className="flex items-center gap-1 ml-auto opacity-85 sm:opacity-70 group-hover:opacity-100 transition-opacity duration-150 shrink-0">
                 {node.numbered && (
                   <>
                     <button
@@ -384,15 +388,15 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
           {/* Insert Antigravity config files right after .gitignore so order matches Step 3 preview */}
           {depth === 0 && isGitignore && renderAntigravityConfigRows(stageId)}
 
-          {/* For Stage 03 .agents/skills/, render all 12 skills with live mode-driven checkboxes */}
+          {/* For Stage 03 .agents/skills/, render all 13 skills with live mode-driven checkboxes */}
           {isStage03SkillsFolder && (
-            <div className="ml-5 pl-3 border-l border-line space-y-0.5 py-1">
+            <div className="ml-2.5 sm:ml-5 pl-2.5 sm:pl-3 border-l border-line space-y-0.5 py-1">
               {DEV_SKILLS_META.map((sk) => {
                 const isSelected = activeSkillNames.has(sk.name);
                 return (
                   <div
                     key={sk.name}
-                    className={`flex items-start justify-between gap-2 py-2 px-3 rounded-lg transition-opacity duration-200 ${
+                    className={`flex items-start justify-between gap-2 py-2 px-2 sm:px-3 rounded-lg transition-opacity duration-200 ${
                       isSelected ? 'opacity-100' : 'opacity-40'
                     }`}
                   >
@@ -414,9 +418,9 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
                         strokeWidth={1.5}
                       />
 
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs text-ink truncate">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                          <span className="font-mono text-xs text-ink break-words sm:truncate">
                             {sk.name}
                           </span>
                           {sk.category === 'discovery' && !isSelected && (
@@ -448,7 +452,7 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
               className="animate-fade-rise my-2 mx-3 p-3 rounded-lg border border-ink bg-canvas space-y-2 text-xs"
             >
               <div className="font-medium text-ink">重命名 {node.displayName}</div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <input
                   type="text"
                   required
@@ -494,15 +498,15 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
   };
 
   return (
-    <section className="animate-fade-rise max-w-3xl mx-auto px-6 py-12 space-y-8">
+    <section className="animate-fade-rise max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6 sm:space-y-8">
       <div>
-        <h1 className="text-2xl font-medium tracking-tight text-ink">目录确认</h1>
+        <h1 className="text-xl sm:text-2xl font-medium tracking-tight text-ink">目录确认</h1>
         <p className="mt-1.5 text-sm text-ink-secondary">
           确认各阶段内的文件、目录与技能包配置
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-5 sm:space-y-6">
         {bundle.stageTrees.map((stage) => {
           const isDevStage = stage.stageId === '03';
 
@@ -512,16 +516,16 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
               className="bg-surface border border-line rounded-xl overflow-hidden"
             >
               {/* Unified Stage Card Header */}
-              <div className="px-6 py-4 border-b border-line flex items-center justify-between gap-3">
+              <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-line flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-3">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-mono text-xs text-ink-muted">
+                  <span className="font-mono text-xs text-ink-muted shrink-0">
                     {stage.stageId}
                   </span>
-                  <span className="font-mono text-sm font-medium text-ink truncate">
+                  <span className="font-mono text-sm font-medium text-ink break-words sm:truncate">
                     {stage.displayName}/
                   </span>
                 </div>
-                <span className="text-xs text-ink-muted shrink-0">
+                <span className="text-xs text-ink-muted sm:shrink-0">
                   {isDevStage
                     ? '由 Agent 自动执行 build-fde-project 初始化工程'
                     : '3 级目录自动附带 README'}
@@ -530,8 +534,8 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
 
               {/* Stage 03 Dev Mode Selector (only rendered when Stage 03 is selected) */}
               {isDevStage && (
-                <div className="px-6 py-3.5 bg-canvas/80 border-b border-line flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5 text-sm">
+                <div className="px-4 sm:px-6 py-3.5 bg-canvas/80 border-b border-line flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-sm">
                     <span className="font-medium text-ink">产品开发阶段</span>
                     <span className="text-xs text-ink-muted">
                       {bundle.effectiveDevMode === 'linked'
@@ -540,11 +544,11 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1 bg-surface p-1 rounded-lg border border-line shrink-0">
+                  <div className="grid grid-cols-2 sm:flex items-center gap-1 bg-surface p-1 rounded-lg border border-line w-full sm:w-auto shrink-0">
                     <button
                       type="button"
                       onClick={() => onToggleDevModeManual('linked')}
-                      className={`px-3 py-1.5 rounded-md text-xs transition-colors duration-150 cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-md text-xs text-center transition-colors duration-150 cursor-pointer ${
                         bundle.effectiveDevMode === 'linked'
                           ? 'bg-ink text-white font-medium'
                           : 'text-ink-secondary hover:text-ink'
@@ -555,7 +559,7 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
                     <button
                       type="button"
                       onClick={() => onToggleDevModeManual('full')}
-                      className={`px-3 py-1.5 rounded-md text-xs transition-colors duration-150 cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-md text-xs text-center transition-colors duration-150 cursor-pointer ${
                         bundle.effectiveDevMode === 'full'
                           ? 'bg-ink text-white font-medium'
                           : 'text-ink-secondary hover:text-ink'
@@ -568,11 +572,11 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
               )}
 
               {/* Unified Tree Body for both 02 & 03 */}
-              <div className="p-3.5 space-y-0.5">
+              <div className="p-2.5 sm:p-3.5 space-y-0.5">
                 {renderTreeNodes(stage.children, stage.stageId, 0)}
 
                 {!isDevStage && (
-                  <div className="pt-2 px-3 pb-1">
+                  <div className="pt-2 px-2.5 sm:px-3 pb-1">
                     {addForm?.stageId === stage.stageId && addForm.parentId === null ? (
                       renderAddFolderInlineForm()
                     ) : (
@@ -600,11 +604,11 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
       </div>
 
       {/* Bottom Step Navigation */}
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex items-center justify-between gap-3 pt-2">
         <button
           type="button"
           onClick={onBackToConfig}
-          className="h-11 px-5 rounded-lg border border-line bg-surface text-sm text-ink-secondary hover:text-ink flex items-center gap-1.5 transition-colors cursor-pointer"
+          className="h-11 px-4 sm:px-5 rounded-lg border border-line bg-surface text-sm text-ink-secondary hover:text-ink flex items-center gap-1.5 whitespace-nowrap transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
           <span>上一步</span>
@@ -613,7 +617,7 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
         <button
           type="button"
           onClick={onNextToExport}
-          className="group inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg bg-ink text-white text-sm font-medium hover:bg-ink/90 active:scale-[0.98] transition-[background-color,transform] duration-150 cursor-pointer"
+          className="group inline-flex items-center justify-center gap-2 h-11 px-5 sm:px-6 rounded-lg bg-ink text-white text-sm font-medium whitespace-nowrap hover:bg-ink/90 active:scale-[0.98] transition-[background-color,transform] duration-150 cursor-pointer"
         >
           <span>下一步：预览并下载</span>
           <ArrowRight

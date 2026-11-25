@@ -25,15 +25,15 @@ export const AtlasLanding: React.FC<AtlasLandingProps> = ({ onStartBuild }) => {
           }}
         />
 
-        <div className="relative z-10 max-w-3xl mx-auto px-6 pt-28 pb-16 text-center">
-          <h1 className="animate-fade-rise text-4xl sm:text-6xl font-medium tracking-tight text-ink leading-[1.15]">
+        <div className="relative z-10 max-w-3xl mx-auto px-5 sm:px-6 pt-24 sm:pt-28 pb-12 sm:pb-16 text-center">
+          <h1 className="animate-fade-rise text-3xl sm:text-6xl font-medium tracking-tight text-ink leading-[1.18] sm:leading-[1.15]">
             快速构建 AI 工作区
           </h1>
-          <p className="animate-fade-rise-delay-1 mt-6 text-base sm:text-lg text-ink-secondary max-w-lg mx-auto leading-relaxed [text-wrap:balance]">
+          <p className="animate-fade-rise-delay-1 mt-5 sm:mt-6 text-sm sm:text-lg text-ink-secondary max-w-lg mx-auto leading-relaxed [text-wrap:balance]">
             按工程阶段生成规范目录、规则入口与开发技能包，导出即可交由本地 Agent 启动项目
           </p>
 
-          <div className="animate-fade-rise-delay-2 mt-10">
+          <div className="animate-fade-rise-delay-2 mt-8 sm:mt-10">
             <button
               type="button"
               onClick={onStartBuild}
@@ -48,12 +48,12 @@ export const AtlasLanding: React.FC<AtlasLandingProps> = ({ onStartBuild }) => {
           </div>
         </div>
 
-        <div className="relative z-10 h-44 sm:h-60" />
+        <div className="relative z-10 h-36 sm:h-60" />
       </section>
 
       {/* Three concise value pillars */}
       <section className="border-t border-line bg-surface">
-        <div className="max-w-5xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="max-w-5xl mx-auto px-5 sm:px-6 py-14 sm:py-20 grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12">
           <div>
             <div className="font-mono text-xs text-ink-muted mb-3">01</div>
             <h2 className="text-base font-medium text-ink">按岗位拆分阶段</h2>
@@ -80,7 +80,7 @@ export const AtlasLanding: React.FC<AtlasLandingProps> = ({ onStartBuild }) => {
         </div>
 
         <footer className="border-t border-line">
-          <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between text-xs text-ink-muted">
+          <div className="max-w-5xl mx-auto px-5 sm:px-6 py-5 sm:py-6 flex items-center justify-between text-xs text-ink-muted">
             <span>一键项目初始化</span>
             <span>作者：fufu</span>
           </div>

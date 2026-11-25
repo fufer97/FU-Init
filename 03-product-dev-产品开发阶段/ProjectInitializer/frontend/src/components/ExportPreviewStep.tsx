@@ -85,9 +85,11 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
   };
 
   return (
-    <section className="animate-fade-rise max-w-3xl mx-auto px-6 py-12 space-y-8">
+    <section className="animate-fade-rise max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6 sm:space-y-8">
       <div>
-        <h1 className="text-2xl font-medium tracking-tight text-ink">下载初始化 ZIP</h1>
+        <h1 className="text-xl sm:text-2xl font-medium tracking-tight text-ink">
+          下载初始化 ZIP
+        </h1>
         <p className="mt-1.5 text-sm text-ink-secondary">
           确认最终目录结构，打包下载并解压到你的项目文件夹即可开工
         </p>
@@ -95,12 +97,12 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
 
       {/* Full-width Clean Visual Directory Preview (Zero Nested Scrollbar) */}
       <div className="bg-surface border border-line rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-line flex items-center justify-between gap-4">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-line flex flex-wrap items-center justify-between gap-2">
           <span className="text-sm font-medium text-ink">目录预览</span>
           <span className="font-mono text-xs text-ink-muted truncate">{zipName}</span>
         </div>
 
-        <div className="p-6 space-y-3 text-xs">
+        <div className="p-4 sm:p-6 space-y-3 text-xs">
           {/* Root One-time Bootstrap File */}
           <div className="flex items-center justify-between gap-2 h-8 px-2.5 rounded-md bg-subtle/60">
             <div className="flex items-center gap-2.5 min-w-0">
@@ -122,7 +124,7 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
             return (
               <div key={stage.stageId} className="space-y-0.5">
                 {/* Level 1 Stage Folder Row */}
-                <div className="flex items-center justify-between gap-2 h-8 px-2.5 rounded-md bg-canvas border border-line/80">
+                <div className="flex items-center justify-between gap-2 min-h-8 py-1.5 px-2.5 rounded-md bg-canvas border border-line/80">
                   <div className="flex items-center gap-2.5 min-w-0">
                     <FolderOpen
                       className="w-4 h-4 text-accent shrink-0"
@@ -136,7 +138,7 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                 </div>
 
                 {/* Level 2 Children (exact same order as Step 2) */}
-                <div className="ml-4 pl-3 border-l border-line space-y-0.5 pt-0.5">
+                <div className="ml-2.5 sm:ml-4 pl-2.5 sm:pl-3 border-l border-line space-y-0.5 pt-0.5">
                   {agentsFile && (
                     <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md">
                       <div className="flex items-center gap-2.5 min-w-0">
@@ -146,7 +148,9 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                         />
                         <span className="font-mono text-ink truncate">AGENTS.md</span>
                       </div>
-                      <span className="text-[11px] text-ink-muted shrink-0">入口说明</span>
+                      <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
+                        入口说明
+                      </span>
                     </div>
                   )}
 
@@ -159,7 +163,7 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                         />
                         <span className="font-mono text-ink truncate">.gitignore</span>
                       </div>
-                      <span className="text-[11px] text-ink-muted shrink-0">
+                      <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
                         Git 忽略规则
                       </span>
                     </div>
@@ -175,7 +179,7 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                           />
                           <span className="font-mono truncate">.antigravityignore</span>
                         </div>
-                        <span className="text-[11px] text-ink-muted shrink-0">
+                        <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
                           忽略配置
                         </span>
                       </div>
@@ -193,7 +197,7 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                               : 'workspace-rules.md'}
                           </span>
                         </div>
-                        <span className="text-[11px] text-ink-muted shrink-0">
+                        <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
                           工作区规则
                         </span>
                       </div>
@@ -329,11 +333,11 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
       </div>
 
       {/* Download Action Row */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-3">
         <button
           type="button"
           onClick={onBackToWorkbench}
-          className="h-11 px-5 rounded-lg border border-line bg-surface text-sm text-ink-secondary hover:text-ink flex items-center gap-1.5 transition-colors cursor-pointer"
+          className="h-11 px-4 sm:px-5 rounded-lg border border-line bg-surface text-sm text-ink-secondary hover:text-ink flex items-center gap-1.5 whitespace-nowrap transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
           <span>上一步</span>
@@ -342,7 +346,7 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
         <button
           type="button"
           onClick={handleDownload}
-          className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg bg-ink text-white text-sm font-medium hover:bg-ink/90 active:scale-[0.98] transition-[background-color,transform] duration-150 cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 h-11 px-5 sm:px-6 rounded-lg bg-ink text-white text-sm font-medium whitespace-nowrap hover:bg-ink/90 active:scale-[0.98] transition-[background-color,transform] duration-150 cursor-pointer"
         >
           <Download className="w-4 h-4" strokeWidth={1.5} />
           <span>{downloaded ? '重新下载初始化 ZIP' : '下载初始化 ZIP'}</span>
@@ -352,7 +356,7 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
       {downloaded && (
         <div className="animate-fade-rise px-4 py-3 rounded-lg bg-accent-soft border border-accent/20 flex items-center gap-2.5 text-xs text-ink">
           <Check className="w-4 h-4 text-accent shrink-0 animate-check-pop" strokeWidth={2} />
-          <span>
+          <span className="leading-relaxed">
             已开始下载 <code className="font-mono font-medium">{zipName}</code>
             ，解压后复制下方对话发给 Agent 即可完成初始化
           </span>
@@ -360,15 +364,15 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
       )}
 
       {/* Post-Download Agent Opening Prompt + WorkBuddy Fallback */}
-      <div className="bg-surface border border-line rounded-xl p-6 space-y-4">
+      <div className="bg-surface border border-line rounded-xl p-4 sm:p-6 space-y-4">
         <div className="flex items-center justify-between gap-3">
-          <span className="text-sm font-medium text-ink">
+          <span className="text-sm font-medium text-ink leading-snug">
             解压后发送对话给 Agent 完成初始化
           </span>
           <button
             type="button"
             onClick={() => copyText(openingPrompt, setCopiedPrompt)}
-            className="h-8 px-3 rounded-md border border-line bg-canvas hover:border-ink/40 text-xs text-ink flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="h-8 px-3 rounded-md border border-line bg-canvas hover:border-ink/40 text-xs text-ink flex items-center gap-1.5 shrink-0 whitespace-nowrap transition-colors cursor-pointer"
           >
             {copiedPrompt ? (
               <>
@@ -387,7 +391,7 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
           </button>
         </div>
 
-        <pre className="p-4 rounded-lg bg-subtle border border-line font-mono text-xs text-ink whitespace-pre-wrap leading-relaxed select-all">
+        <pre className="p-3.5 sm:p-4 rounded-lg bg-subtle border border-line font-mono text-xs text-ink whitespace-pre-wrap break-words leading-relaxed select-all">
           {openingPrompt}
         </pre>
 

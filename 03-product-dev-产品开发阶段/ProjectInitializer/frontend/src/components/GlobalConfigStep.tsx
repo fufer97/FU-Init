@@ -62,9 +62,9 @@ export const GlobalConfigStep: React.FC<GlobalConfigStepProps> = ({
   };
 
   return (
-    <section className="animate-fade-rise max-w-3xl mx-auto px-6 py-12 space-y-8">
+    <section className="animate-fade-rise max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6 sm:space-y-8">
       <div>
-        <h1 className="text-2xl font-medium tracking-tight text-ink">基础配置</h1>
+        <h1 className="text-xl sm:text-2xl font-medium tracking-tight text-ink">基础配置</h1>
         <p className="mt-1.5 text-sm text-ink-secondary">
           选择目录语言、主力 Agent 与本项目涉及的阶段
         </p>
@@ -90,9 +90,9 @@ export const GlobalConfigStep: React.FC<GlobalConfigStepProps> = ({
       )}
 
       {/* 1. Directory Language: 中文 / 英文 / 中文+英文 */}
-      <div className="bg-surface border border-line rounded-xl p-6 space-y-4">
+      <div className="bg-surface border border-line rounded-xl p-4 sm:p-6 space-y-3.5 sm:space-y-4">
         <div className="text-sm font-medium text-ink">目录语言</div>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
           {LANGUAGE_OPTIONS.map((opt) => {
             const active = config.language === opt.id;
             return (
@@ -100,27 +100,29 @@ export const GlobalConfigStep: React.FC<GlobalConfigStepProps> = ({
                 key={opt.id}
                 type="button"
                 onClick={() => onChangeLanguage(opt.id)}
-                className={`h-11 px-4 rounded-lg border text-sm flex items-center justify-between active:scale-[0.99] transition-[background-color,border-color,color,transform] duration-150 cursor-pointer ${
+                className={`h-11 px-2.5 sm:px-4 rounded-lg border text-xs sm:text-sm flex items-center justify-center sm:justify-between gap-1.5 whitespace-nowrap active:scale-[0.99] transition-[background-color,border-color,color,transform] duration-150 cursor-pointer ${
                   active
                     ? 'border-ink bg-ink text-white font-medium'
                     : 'border-line bg-canvas text-ink hover:border-ink/40'
                 }`}
               >
                 <span>{opt.label}</span>
-                {active && <Check className="w-4 h-4 animate-check-pop" strokeWidth={1.5} />}
+                {active && (
+                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 animate-check-pop" strokeWidth={1.5} />
+                )}
               </button>
             );
           })}
         </div>
-        <p className="font-mono text-xs text-ink-muted transition-opacity duration-200">
+        <p className="font-mono text-xs text-ink-muted break-words transition-opacity duration-200">
           示例：{currentLang.preview}
         </p>
       </div>
 
       {/* 2. Primary Agent (clean title-only cards, no subtitle text) */}
-      <div className="bg-surface border border-line rounded-xl p-6 space-y-4">
+      <div className="bg-surface border border-line rounded-xl p-4 sm:p-6 space-y-3.5 sm:space-y-4">
         <div className="text-sm font-medium text-ink">主力 Agent</div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
           <button
             type="button"
             onClick={() => onChangeAgent('antigravity')}
@@ -154,8 +156,8 @@ export const GlobalConfigStep: React.FC<GlobalConfigStepProps> = ({
       </div>
 
       {/* 3. Stages (01, 04, 05 disabled & marked 暂未开放) */}
-      <div className="bg-surface border border-line rounded-xl p-6 space-y-4">
-        <div className="flex items-baseline justify-between">
+      <div className="bg-surface border border-line rounded-xl p-4 sm:p-6 space-y-3.5 sm:space-y-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
           <span className="text-sm font-medium text-ink">包含的阶段</span>
           <span className="text-xs text-ink-muted">每个阶段独立成一个文件夹</span>
         </div>
@@ -172,7 +174,7 @@ export const GlobalConfigStep: React.FC<GlobalConfigStepProps> = ({
                 type="button"
                 disabled={!isEnabled}
                 onClick={() => handleStageToggle(stageId)}
-                className={`w-full px-4 py-3.5 text-left flex items-center justify-between gap-4 transition-colors duration-150 ${
+                className={`w-full px-3.5 sm:px-4 py-3.5 text-left flex items-center justify-between gap-3 sm:gap-4 transition-colors duration-150 ${
                   !isEnabled
                     ? 'bg-canvas/70 opacity-55 cursor-not-allowed'
                     : checked
@@ -180,7 +182,7 @@ export const GlobalConfigStep: React.FC<GlobalConfigStepProps> = ({
                     : 'bg-canvas/40 hover:bg-canvas cursor-pointer'
                 }`}
               >
-                <div className="flex items-center gap-3.5 min-w-0">
+                <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
                   <span
                     className={`w-4 h-4 rounded flex items-center justify-center border shrink-0 transition-colors duration-150 ${
                       !isEnabled
@@ -208,7 +210,9 @@ export const GlobalConfigStep: React.FC<GlobalConfigStepProps> = ({
                         {bp.nameZh}
                       </span>
                     </div>
-                    <p className="text-xs text-ink-muted mt-0.5 truncate">{bp.summary}</p>
+                    <p className="text-xs text-ink-muted mt-0.5 leading-snug sm:truncate">
+                      {bp.summary}
+                    </p>
                   </div>
                 </div>
 
@@ -232,7 +236,7 @@ export const GlobalConfigStep: React.FC<GlobalConfigStepProps> = ({
         <button
           type="button"
           onClick={onNextToWorkbench}
-          className="group inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg bg-ink text-white text-sm font-medium hover:bg-ink/90 active:scale-[0.98] transition-[background-color,transform] duration-150 cursor-pointer"
+          className="group w-full sm:w-auto inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg bg-ink text-white text-sm font-medium hover:bg-ink/90 active:scale-[0.98] transition-[background-color,transform] duration-150 cursor-pointer"
         >
           <span>下一步：目录确认</span>
           <ArrowRight
