@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ResolvedArtifactBundle } from '../types/config';
+import { BUNDLED_CONTEXT_TEMPLATES } from '../data/bundledAssets';
 import {
   buildAgentOpeningPrompt,
   buildFallbackShellScript,
@@ -201,6 +202,21 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                           工作区规则
                         </span>
                       </div>
+
+                      <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md text-ink-secondary">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <FileCode2
+                            className="w-4 h-4 text-ink-muted shrink-0"
+                            strokeWidth={1.5}
+                          />
+                          <span className="font-mono truncate">
+                            .agents/rules/coding-discipline.md
+                          </span>
+                        </div>
+                        <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
+                          编码纪律
+                        </span>
+                      </div>
                     </>
                   )}
 
@@ -268,11 +284,13 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                     }
 
                     const activeSubfolders = node.children.filter((ch) => ch.checked);
+                    const hasContextTemplates = node.id === '02-context';
+                    const showOpenFolder = activeSubfolders.length > 0 || hasContextTemplates;
                     return (
                       <div key={node.id} className="space-y-0.5">
                         <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md">
                           <div className="flex items-center gap-2.5 min-w-0">
-                            {activeSubfolders.length > 0 ? (
+                            {showOpenFolder ? (
                               <FolderOpen
                                 className="w-4 h-4 text-accent/85 shrink-0"
                                 strokeWidth={1.5}
@@ -287,7 +305,33 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                               {node.displayName}
                             </span>
                           </div>
+                          {hasContextTemplates && (
+                            <span className="text-[11px] text-accent shrink-0">
+                              {BUNDLED_CONTEXT_TEMPLATES.length} 份模板
+                            </span>
+                          )}
                         </div>
+
+                        {hasContextTemplates && (
+                          <div className="ml-2.5 sm:ml-4 pl-2.5 sm:pl-3 border-l border-line space-y-0.5">
+                            {BUNDLED_CONTEXT_TEMPLATES.map((tpl) => (
+                              <div
+                                key={tpl.filename}
+                                className="flex items-center justify-between gap-2 h-7 px-2 rounded-md text-ink-secondary"
+                              >
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <FileText
+                                    className="w-3.5 h-3.5 text-ink-muted shrink-0"
+                                    strokeWidth={1.5}
+                                  />
+                                  <span className="font-mono text-ink truncate">
+                                    {tpl.filename}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
 
                         {activeSubfolders.length > 0 && (
                           <div className="ml-4 pl-3 border-l border-line space-y-0.5">

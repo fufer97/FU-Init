@@ -62,17 +62,31 @@ describe('V2 Pure Skeleton Engine, Dual-Mode Skills & Flat-Root ZIP', () => {
       '02': { ...bp['02'], nodes: withNewRoot },
     });
 
-    // Zero pre-baked business docs
+    // Universal 00-08 context templates exist in 02/1-context with zero case-specific leakage
+    const contextIndex =
+      bundle.fileMap['02-product-design-产品设计阶段/1-context-业务上下文/00-背景信息索引.md'];
+    expect(contextIndex).toBeDefined();
     expect(
-      bundle.files.some((f) => f.path.includes('01-项目背景.md') || f.path.includes('PRD模板.md') || f.path.includes('HANDOFF.md'))
+      bundle.fileMap['02-product-design-产品设计阶段/1-context-业务上下文/08-术语与口径字典.md']
+    ).toBeDefined();
+    for (const file of bundle.files.filter((f) => f.path.includes('1-context-业务上下文/'))) {
+      expect(file.content).not.toContain('强盛科技');
+      expect(file.content).not.toContain('华强北');
+      expect(file.content).not.toContain('林强');
+      expect(file.content).not.toContain('进销存');
+    }
+
+    // No pre-baked business PRDs/handoffs in other folders
+    expect(
+      bundle.files.some((f) => f.path.includes('PRD模板.md') || f.path.includes('HANDOFF.md'))
     ).toBe(false);
 
-    // Level 2 empty folders have .gitkeep, NOT README.md
+    // Other empty Level 2 folders have .gitkeep, NOT README.md
     expect(
-      bundle.fileMap['02-product-design-产品设计阶段/1-context-业务上下文/.gitkeep']
+      bundle.fileMap['02-product-design-产品设计阶段/2-template-输出模板/.gitkeep']
     ).toBeDefined();
     expect(
-      bundle.fileMap['02-product-design-产品设计阶段/1-context-业务上下文/README.md']
+      bundle.fileMap['02-product-design-产品设计阶段/2-template-输出模板/README.md']
     ).toBeUndefined();
     expect(
       bundle.fileMap['03-product-dev-产品开发阶段/Raw/.gitkeep']
@@ -134,14 +148,25 @@ describe('V2 Pure Skeleton Engine, Dual-Mode Skills & Flat-Root ZIP', () => {
     expect(paths).not.toContain('.gitignore');
     expect(paths).toContain('02-product-design-产品设计阶段/AGENTS.md');
     expect(paths).toContain('02-product-design-产品设计阶段/.gitignore');
+    expect(paths).toContain('02-product-design-产品设计阶段/.agents/rules/coding-discipline.md');
+    expect(paths).toContain(
+      '02-product-design-产品设计阶段/1-context-业务上下文/00-背景信息索引.md'
+    );
     expect(paths).toContain('03-product-dev-产品开发阶段/AGENTS.md');
     expect(paths).toContain('03-product-dev-产品开发阶段/.gitignore');
+    expect(paths).toContain('03-product-dev-产品开发阶段/.agents/rules/coding-discipline.md');
     expect(paths).toContain(
       '03-product-dev-产品开发阶段/.agents/skills/build-fde-project/scripts/init_project.py'
     );
     expect(paths).toContain(
       '03-product-dev-产品开发阶段/.agents/skills/classify-project-data/SKILL.md'
     );
+
+    const codingRule = await loadedZip
+      .file('03-product-dev-产品开发阶段/.agents/rules/coding-discipline.md')!
+      .async('string');
+    expect(codingRule).toContain('# Coding Discipline（编码纪律）');
+    expect(codingRule).toContain('trigger: model_decision');
 
     const gitignore02 = await loadedZip
       .file('02-product-design-产品设计阶段/.gitignore')!

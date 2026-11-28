@@ -226,6 +226,26 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
             </div>
           </div>
         </div>
+
+        <div className="flex items-center justify-between gap-2 py-2.5 px-2.5 sm:px-3 rounded-lg hover:bg-subtle/60 transition-colors duration-150">
+          <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
+            <span
+              aria-label="必需配置"
+              className="mt-0.5 sm:mt-0 w-4 h-4 rounded flex items-center justify-center border shrink-0 bg-subtle border-line text-ink-muted"
+            >
+              <Lock className="w-2.5 h-2.5" strokeWidth={1.5} />
+            </span>
+            <FileCode2 className="mt-0.5 sm:mt-0 w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
+            <div className="min-w-0 flex-1">
+              <div className="font-mono text-xs text-ink break-words sm:truncate">
+                .agents/rules/coding-discipline.md
+              </div>
+              <p className="text-xs text-ink-muted leading-snug sm:truncate">
+                编码纪律规则（涉及编码、调试与代码评审时自动触发）
+              </p>
+            </div>
+          </div>
+        </div>
       </>
     );
   };
@@ -296,6 +316,11 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
                       ? '.agents/skills/'
                       : `${node.displayName}${node.kind === 'folder' ? '/' : ''}`}
                   </span>
+                  {node.id === '02-context' && node.checked && (
+                    <span className="text-[11px] text-accent shrink-0">
+                      含 00–08 背景模板
+                    </span>
+                  )}
                   {node.level >= 3 && node.kind === 'folder' && node.checked && (
                     <span className="text-[11px] text-accent font-mono shrink-0">
                       +README

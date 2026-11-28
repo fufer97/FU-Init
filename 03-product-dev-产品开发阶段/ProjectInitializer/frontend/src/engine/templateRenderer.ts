@@ -1,4 +1,8 @@
-import { BUNDLED_SKILLS, BUNDLED_TEMPLATES } from '../data/bundledAssets';
+import {
+  BUNDLED_CONTEXT_TEMPLATES,
+  BUNDLED_SKILLS,
+  BUNDLED_TEMPLATES,
+} from '../data/bundledAssets';
 import { getActiveSkillsForMode } from '../data/stageBlueprints';
 import {
   DevMode,
@@ -11,6 +15,10 @@ import {
   StageId,
 } from '../types/config';
 import { computeResolvedStageTrees, resolveDevMode } from './treeEngine';
+
+function stripFrontmatter(markdown: string): string {
+  return markdown.replace(/^---\n[\s\S]*?\n---\n+/, '').trim();
+}
 
 function renderStageAgentsMd(
   stageRoot: ResolvedTreeNode,
@@ -32,10 +40,15 @@ function renderStageAgentsMd(
           stageRoot.stageId === '03'
             ? BUNDLED_TEMPLATES.engineeringPrinciples
             : BUNDLED_TEMPLATES.designPrinciples
-        }\n`
+        }\n\n---\n\n${stripFrontmatter(BUNDLED_TEMPLATES.codingDiscipline)}\n`
       : '';
 
   if (stageRoot.stageId === '02') {
+    const contextFolder = checkedL2Folders.find((f) => f.id === '02-context');
+    const contextHint = contextFolder
+      ? `- **先读背景总索引**：进入本工作区后先阅读 \`${contextFolder.displayName}/00-背景信息索引.md\`，通过提问逐步协助用户将 \`01\`–\`08\` 通用模板中的 \`【待确认】\` 内容补全，并遵循权威层级 \`context/ > template/ > prd/\`。`
+      : '';
+
     return `# AGENTS.md — ${stageRoot.displayName}
 
 > **项目名称**：【首次对话向用户确认后填写】
@@ -51,7 +64,7 @@ ${dirRows}
 
 ## 2. 协作约束
 
-- 所有文档统一使用简体中文 Markdown，单文件尽量保持在 2000 字以内，过长按模块拆分。
+${contextHint ? `${contextHint}\n` : ''}- 所有文档统一使用简体中文 Markdown，单文件尽量保持在 2000 字以内，过长按模块拆分。
 - **按需生成子目录索引**：当某个目录内文件数 ≥ 5 或拆分出具体业务模块子目录时，由 Agent 自动生成并维护该目录的 \`README.md\` 索引，不提前创建空壳说明文件。
 - **改源头，不改对话**：确认后的业务规则或纠偏直接写回对应文件，不留在临时对话里。
 - 遇到不确定的业务规则先标 \`【待确认】\`，不擅自编造不存在的字段或功能。
@@ -158,8 +171,12 @@ function renderBootstrapMd(
   const steps: string[] = [];
 
   if (stage02) {
+    const contextNode = stage02.children.find((c) => c.id === '02-context' && c.checked);
+    const contextStep = contextNode
+      ? `2. \`${stage02.displayName}/${contextNode.displayName}/\` 已预置 \`00\`–\`08\` 通用业务背景模板（均为 \`⚪ 待填充\`），请通过提问了解用户项目背景与目标，逐步补全模板内容并同步更新 \`00-背景信息索引.md\` 状态。`
+      : `2. 通过对话向用户了解项目背景与目标，再按需在业务上下文与需求文档目录下生成文档。`;
     steps.push(
-      `### ${stage02.displayName}\n1. 用 ${agentName} 直接打开 \`${stage02.displayName}/\` 作为工作区，先读 \`AGENTS.md\`。\n2. 通过对话向用户了解项目背景与目标，再按需在业务上下文与需求文档目录下生成文档（不预填假内容）。${
+      `### ${stage02.displayName}\n1. 用 ${agentName} 直接打开 \`${stage02.displayName}/\` 作为工作区，先读 \`AGENTS.md\`。\n${contextStep}${
         stage03
           ? `\n3. 设计定稿后，将产出物复制到 \`../${stage03.displayName}/Raw/\` 完成交接。`
           : ''
@@ -305,6 +322,14 @@ export function buildArtifactBundle(
         stageId,
         description: 'Antigravity 工作区规则',
       });
+
+      files.push({
+        path: `${stageRoot.relativePath}/.agents/rules/coding-discipline.md`,
+        content: BUNDLED_TEMPLATES.codingDiscipline,
+        category: 'agent-config',
+        stageId,
+        description: '编码纪律规则（涉及写代码/改代码时自动触发）',
+      });
     }
 
     // For stage 03, inject all active skills into .agents/skills/<skillName>/
@@ -356,6 +381,19 @@ export function buildArtifactBundle(
           }
         } else if (node.kind === 'folder') {
           if (node.displayName === '.agents') continue;
+
+          // Stage 02 context folder: populate 00-08 universal context templates
+          if (node.id === '02-context') {
+            for (const tpl of BUNDLED_CONTEXT_TEMPLATES) {
+              files.push({
+                path: `${node.relativePath}/${tpl.filename}`,
+                content: tpl.content,
+                category: 'custom',
+                stageId,
+                description: '通用项目背景模板（初始化后由 Agent 引导补全）',
+              });
+            }
+          }
 
           walkNodes(node.children);
 
