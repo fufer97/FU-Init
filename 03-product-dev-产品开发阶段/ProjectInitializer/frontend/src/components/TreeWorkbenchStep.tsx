@@ -63,7 +63,7 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
   onNextToExport,
 }) => {
   const [recentMovedId, setRecentMovedId] = useState<string | null>(null);
-  const [contextExpanded, setContextExpanded] = useState(false);
+  const [expandedFolderIds, setExpandedFolderIds] = useState<Record<string, boolean>>({});
   const [rulesExpandedByStage, setRulesExpandedByStage] = useState<Record<string, boolean>>({});
 
   const [addForm, setAddForm] = useState<{
@@ -316,15 +316,28 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
       const canMoveDown = node.numbered && idx < nodes.length - 1;
       const isFlashing = recentMovedId === node.id;
       const isGitignore = node.templateKey === 'stage-gitignore';
-      const isContextTemplateFile = Boolean(node.templateKey?.startsWith('context-template:'));
-      const isContextFolder = node.id === '02-context';
-      const contextTemplateChildren = isContextFolder
-        ? node.children.filter((c) => c.templateKey?.startsWith('context-template:'))
-        : [];
-      const customFolderChildren = isContextFolder
-        ? node.children.filter((c) => !c.templateKey?.startsWith('context-template:'))
+      const isPresetTemplateFile = Boolean(
+        node.templateKey?.startsWith('context-template:') ||
+          node.templateKey?.startsWith('output-template:')
+      );
+      const presetTemplateChildren = node.children.filter(
+        (c) =>
+          c.templateKey?.startsWith('context-template:') ||
+          c.templateKey?.startsWith('output-template:')
+      );
+      const hasPresetTemplates = node.kind === 'folder' && presetTemplateChildren.length > 0;
+      const isFolderExpanded = Boolean(expandedFolderIds[node.id]);
+      const toggleFolderExpanded = () =>
+        setExpandedFolderIds((prev) => ({ ...prev, [node.id]: !prev[node.id] }));
+      const presetLabelUnit = node.id === '02-context' ? '份背景模板' : '份输出模板';
+      const customFolderChildren = hasPresetTemplates
+        ? node.children.filter(
+            (c) =>
+              !c.templateKey?.startsWith('context-template:') &&
+              !c.templateKey?.startsWith('output-template:')
+          )
         : node.children;
-      const checkedContextCount = contextTemplateChildren.filter((c) => c.checked).length;
+      const checkedPresetCount = presetTemplateChildren.filter((c) => c.checked).length;
       const isStage03SkillsFolder =
         stageId === '03' && node.displayName === '.agents' && node.kind === 'folder';
 
@@ -361,18 +374,20 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
                 )}
               </button>
 
-              {isContextFolder ? (
+              {hasPresetTemplates ? (
                 <button
                   type="button"
-                  onClick={() => setContextExpanded((v) => !v)}
-                  aria-expanded={contextExpanded}
+                  onClick={toggleFolderExpanded}
+                  aria-expanded={isFolderExpanded}
                   aria-label={
-                    contextExpanded ? '收起 00–08 背景模板' : '展开查看并勾选 00–08 背景模板'
+                    isFolderExpanded
+                      ? `收起 ${node.displayName} 模板`
+                      : `展开查看并勾选 ${node.displayName} 模板`
                   }
-                  title={contextExpanded ? '收起 00–08 背景模板' : '展开查看 00–08 背景模板'}
+                  title={isFolderExpanded ? '收起模板列表' : '展开查看并勾选模板'}
                   className="mt-0.5 sm:mt-0 -m-1 p-1 rounded-md text-accent hover:bg-accent-soft transition-colors cursor-pointer shrink-0"
                 >
-                  {contextExpanded ? (
+                  {isFolderExpanded ? (
                     <FolderMinus className="w-4 h-4" strokeWidth={1.75} />
                   ) : (
                     <FolderPlus className="w-4 h-4" strokeWidth={1.75} />
@@ -395,13 +410,13 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
                       ? '.agents/skills/'
                       : `${node.displayName}${node.kind === 'folder' ? '/' : ''}`}
                   </span>
-                  {isContextFolder && node.checked && contextTemplateChildren.length > 0 && (
+                  {hasPresetTemplates && node.checked && (
                     <button
                       type="button"
-                      onClick={() => setContextExpanded((v) => !v)}
+                      onClick={toggleFolderExpanded}
                       className="text-[11px] text-accent hover:underline shrink-0 cursor-pointer"
                     >
-                      已选 {checkedContextCount} / {contextTemplateChildren.length} 份背景模板
+                      已选 {checkedPresetCount} / {presetTemplateChildren.length} {presetLabelUnit}
                     </button>
                   )}
                   {node.level >= 3 && node.kind === 'folder' && node.checked && (
@@ -421,7 +436,7 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
               </div>
             </div>
 
-            {!node.locked && !isGitignore && !isContextTemplateFile && (
+            {!node.locked && !isGitignore && !isPresetTemplateFile && (
               <div className="flex items-center gap-1 ml-auto opacity-85 sm:opacity-70 group-hover:opacity-100 transition-opacity duration-150 shrink-0">
                 {node.numbered && (
                   <>
@@ -596,10 +611,10 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
             </form>
           )}
 
-          {/* Expandable 00-08 universal context templates under 1-context */}
-          {isContextFolder && node.checked && contextExpanded && contextTemplateChildren.length > 0 && (
+          {/* Expandable preset templates (00-08 context templates / 8 output templates) */}
+          {hasPresetTemplates && node.checked && isFolderExpanded && (
             <div className="animate-fade-rise ml-2.5 sm:ml-5 pl-2.5 sm:pl-3 border-l border-line space-y-0.5 py-1">
-              {contextTemplateChildren.map((tpl) => (
+              {presetTemplateChildren.map((tpl) => (
                 <div
                   key={tpl.id}
                   className={`flex items-start justify-between gap-2 py-2 px-2 sm:px-3 rounded-lg transition-opacity duration-150 ${

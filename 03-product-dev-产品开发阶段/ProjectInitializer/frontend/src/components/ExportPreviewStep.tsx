@@ -297,14 +297,15 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                     const activeSubfolders = node.children.filter(
                       (ch) => ch.checked && ch.kind === 'folder'
                     );
-                    const checkedContextTemplates = node.children.filter(
+                    const checkedPresetTemplates = node.children.filter(
                       (ch) =>
                         ch.checked &&
                         ch.kind === 'file' &&
-                        ch.templateKey?.startsWith('context-template:')
+                        (ch.templateKey?.startsWith('context-template:') ||
+                          ch.templateKey?.startsWith('output-template:'))
                     );
                     const showOpenFolder =
-                      activeSubfolders.length > 0 || checkedContextTemplates.length > 0;
+                      activeSubfolders.length > 0 || checkedPresetTemplates.length > 0;
                     return (
                       <div key={node.id} className="space-y-0.5">
                         <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md">
@@ -324,16 +325,16 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                               {node.displayName}
                             </span>
                           </div>
-                          {checkedContextTemplates.length > 0 && (
+                          {checkedPresetTemplates.length > 0 && (
                             <span className="text-[11px] text-accent shrink-0">
-                              {checkedContextTemplates.length} 份模板
+                              {checkedPresetTemplates.length} 份模板
                             </span>
                           )}
                         </div>
 
-                        {checkedContextTemplates.length > 0 && (
+                        {checkedPresetTemplates.length > 0 && (
                           <div className="ml-2.5 sm:ml-4 pl-2.5 sm:pl-3 border-l border-line space-y-0.5">
-                            {checkedContextTemplates.map((tpl) => (
+                            {checkedPresetTemplates.map((tpl) => (
                               <div
                                 key={tpl.id}
                                 className="flex items-center justify-between gap-2 h-7 px-2 rounded-md text-ink-secondary"

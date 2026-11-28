@@ -92,17 +92,29 @@ describe('V2 Pure Skeleton Engine, Dual-Mode Skills & Flat-Root ZIP', () => {
       partialCtxBundle.fileMap['02-product-design-产品设计阶段/1-context-业务上下文/08-术语与口径字典.md']
     ).toBeDefined();
 
-    // No pre-baked business PRDs/handoffs in other folders
+    // 8 output templates exist in 02/2-template with zero course-mention strings and individual toggling
+    const outputTplFiles = bundle.files.filter((f) => f.path.includes('2-template-输出模板/'));
+    expect(outputTplFiles).toHaveLength(8);
+    for (const file of outputTplFiles) {
+      expect(file.content).not.toContain('训练营');
+      expect(file.content).not.toContain('全流程预览课');
+    }
+    const toggledOutputNodes = toggleTreeNodeChecked(bp['02'].nodes, '02-tpl-02');
+    const partialOutputBundle = buildArtifactBundle(DEFAULT_CONFIG, {
+      ...bp,
+      '02': { ...bp['02'], nodes: toggledOutputNodes },
+    });
     expect(
-      bundle.files.some((f) => f.path.includes('PRD模板.md') || f.path.includes('HANDOFF.md'))
-    ).toBe(false);
+      partialOutputBundle.fileMap['02-product-design-产品设计阶段/2-template-输出模板/PRD模板-主数据.md']
+    ).toBeUndefined();
 
-    // Other empty Level 2 folders have .gitkeep, NOT README.md
+    // No pre-baked handoffs in 03 Raw, and empty Level 2 folders have .gitkeep, NOT README.md
+    expect(bundle.files.some((f) => f.path.includes('HANDOFF.md'))).toBe(false);
     expect(
-      bundle.fileMap['02-product-design-产品设计阶段/2-template-输出模板/.gitkeep']
+      bundle.fileMap['02-product-design-产品设计阶段/3-prompt-常用提示词/.gitkeep']
     ).toBeDefined();
     expect(
-      bundle.fileMap['02-product-design-产品设计阶段/2-template-输出模板/README.md']
+      bundle.fileMap['02-product-design-产品设计阶段/3-prompt-常用提示词/README.md']
     ).toBeUndefined();
     expect(
       bundle.fileMap['03-product-dev-产品开发阶段/Raw/.gitkeep']
@@ -211,10 +223,17 @@ describe('V2 Pure Skeleton Engine, Dual-Mode Skills & Flat-Root ZIP', () => {
 
   it('includes Chinese 00-08 context templates and .agents/rules/coding-discipline.md across all 6 combinations (zh/en/bilingual x antigravity/generic)', () => {
     const bp = createInitialStageBlueprints();
-    const expectedStage02: Record<'zh' | 'en' | 'bilingual', { stage: string; ctx: string }> = {
-      zh: { stage: '02-产品设计阶段', ctx: '1-业务上下文' },
-      en: { stage: '02-product-design', ctx: '1-context' },
-      bilingual: { stage: '02-product-design-产品设计阶段', ctx: '1-context-业务上下文' },
+    const expectedStage02: Record<
+      'zh' | 'en' | 'bilingual',
+      { stage: string; ctx: string; tpl: string }
+    > = {
+      zh: { stage: '02-产品设计阶段', ctx: '1-业务上下文', tpl: '2-输出模板' },
+      en: { stage: '02-product-design', ctx: '1-context', tpl: '2-template' },
+      bilingual: {
+        stage: '02-product-design-产品设计阶段',
+        ctx: '1-context-业务上下文',
+        tpl: '2-template-输出模板',
+      },
     };
     const expectedStage03: Record<'zh' | 'en' | 'bilingual', string> = {
       zh: '03-产品开发阶段',
@@ -228,11 +247,16 @@ describe('V2 Pure Skeleton Engine, Dual-Mode Skills & Flat-Root ZIP', () => {
         const s02 = expectedStage02[language];
         const s03 = expectedStage03[language];
 
-        // All 9 Chinese 00-08 templates present regardless of language or agent
+        // All 9 Chinese 00-08 templates & 8 output templates present regardless of language or agent
         const ctxFiles = b.files.filter((f) => f.path.startsWith(`${s02.stage}/${s02.ctx}/`));
         expect(ctxFiles).toHaveLength(9);
         expect(b.fileMap[`${s02.stage}/${s02.ctx}/00-背景信息索引.md`]).toBeDefined();
         expect(b.fileMap[`${s02.stage}/${s02.ctx}/08-术语与口径字典.md`]).toBeDefined();
+
+        const tplFiles = b.files.filter((f) => f.path.startsWith(`${s02.stage}/${s02.tpl}/`));
+        expect(tplFiles).toHaveLength(8);
+        expect(b.fileMap[`${s02.stage}/${s02.tpl}/业务单据PRD模板.md`]).toBeDefined();
+        expect(b.fileMap[`${s02.stage}/${s02.tpl}/字段清单模板.md`]).toBeDefined();
 
         // Shared rules including coding-discipline.md present for BOTH Antigravity & Generic Agent
         expect(b.fileMap[`${s02.stage}/.agents/rules/workspace-rules.md`]).toBeDefined();

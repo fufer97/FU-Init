@@ -144,6 +144,53 @@ const CONTEXT_TEMPLATE_NODES_META: Array<{
   },
 ];
 
+const OUTPUT_TEMPLATE_NODES_META: Array<{
+  id: string;
+  filename: string;
+  description: string;
+}> = [
+  {
+    id: '02-tpl-01',
+    filename: '业务单据PRD模板.md',
+    description: '业务单据类主 PRD 标准结构（定位、场景、状态机、规则、权限与验收）',
+  },
+  {
+    id: '02-tpl-02',
+    filename: 'PRD模板-主数据.md',
+    description: '含审批流、多组织与外部同步的主数据管理类功能 PRD 模板',
+  },
+  {
+    id: '02-tpl-03',
+    filename: 'Demo PRD模板.md',
+    description: '列表页、新增/编辑页、详情页的前端原型页面级规格模板',
+  },
+  {
+    id: '02-tpl-04',
+    filename: '字段清单模板.md',
+    description: '11 列标准字段唯一权威源模板（头部、明细、汇总与系统字段）',
+  },
+  {
+    id: '02-tpl-05',
+    filename: '单据状态与流转设计规范.md',
+    description: '状态机全局设计原则、动作按钮触发约束与主数据启停用标准',
+  },
+  {
+    id: '02-tpl-06',
+    filename: '状态机设计模板.md',
+    description: '状态定义、Mermaid 状态图、状态流转表与动作能力矩阵模板',
+  },
+  {
+    id: '02-tpl-07',
+    filename: '业务流程推演模板.md',
+    description: '跨单据与跨系统动态流程演练、数据快照与回写规则模板',
+  },
+  {
+    id: '02-tpl-08',
+    filename: '用例数据推演模板.md',
+    description: '代入真实数值验证数据闭环、异常分支与并发边界的推演模板',
+  },
+];
+
 export function createInitialStageBlueprints(): Record<StageId, StageBlueprint> {
   const makeGitignoreNode = (stageId: StageId): TreeNode => ({
     id: `${stageId}-gitignore`,
@@ -260,8 +307,20 @@ export function createInitialStageBlueprints(): Record<StageId, StageBlueprint> 
       nameEn: 'template',
       numbered: true,
       checked: true,
-      description: '存放固定格式的 PRD 与字段模板',
-      children: [],
+      description: '存放固定格式的 PRD、字段清单、状态机与推演模板',
+      children: OUTPUT_TEMPLATE_NODES_META.map((item) => ({
+        id: item.id,
+        stageId: '02',
+        kind: 'file',
+        level: 3,
+        nameZh: item.filename,
+        nameEn: item.filename,
+        numbered: false,
+        checked: true,
+        locked: false,
+        description: item.description,
+        templateKey: `output-template:${item.filename}`,
+      })),
     },
     {
       id: '02-prompt',

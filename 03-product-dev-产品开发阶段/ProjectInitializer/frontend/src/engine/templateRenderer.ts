@@ -1,5 +1,6 @@
 import {
   BUNDLED_CONTEXT_TEMPLATES,
+  BUNDLED_OUTPUT_TEMPLATES,
   BUNDLED_SKILLS,
   BUNDLED_TEMPLATES,
 } from '../data/bundledAssets';
@@ -415,6 +416,16 @@ export function buildArtifactBundle(
             files.push({
               path: node.relativePath,
               content: renderContextTemplateContent(filename, checkedContextFilenames),
+              category: 'custom',
+              stageId,
+              description: node.description,
+            });
+          } else if (node.templateKey?.startsWith('output-template:')) {
+            const filename = node.templateKey.slice('output-template:'.length);
+            const entry = BUNDLED_OUTPUT_TEMPLATES.find((t) => t.filename === filename);
+            files.push({
+              path: node.relativePath,
+              content: entry ? entry.content : `# ${filename}\n`,
               category: 'custom',
               stageId,
               description: node.description,

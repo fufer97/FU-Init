@@ -140,6 +140,18 @@ const bundledContextTemplates = fs.existsSync(contextTemplatesDir)
       }))
   : [];
 
+const outputTemplatesDir = path.join(frontendRoot, 'templates', 'output');
+const bundledOutputTemplates = fs.existsSync(outputTemplatesDir)
+  ? fs
+      .readdirSync(outputTemplatesDir)
+      .filter((name) => name.endsWith('.md'))
+      .sort()
+      .map((filename) => ({
+        filename,
+        content: fs.readFileSync(path.join(outputTemplatesDir, filename), 'utf-8'),
+      }))
+  : [];
+
 const outDir = path.join(frontendRoot, 'src', 'data');
 fs.mkdirSync(outDir, { recursive: true });
 const outFile = path.join(outDir, 'bundledAssets.ts');
@@ -151,7 +163,7 @@ export interface BundledSkillEntry {
   files: Record<string, string>;
 }
 
-export interface BundledContextTemplate {
+export interface BundledTemplateFile {
   filename: string;
   content: string;
 }
@@ -160,10 +172,12 @@ export const BUNDLED_SKILLS: Record<string, BundledSkillEntry> = ${JSON.stringif
 
 export const BUNDLED_TEMPLATES = ${JSON.stringify(bundledTemplates, null, 2)} as const;
 
-export const BUNDLED_CONTEXT_TEMPLATES: BundledContextTemplate[] = ${JSON.stringify(bundledContextTemplates, null, 2)};
+export const BUNDLED_CONTEXT_TEMPLATES: BundledTemplateFile[] = ${JSON.stringify(bundledContextTemplates, null, 2)};
+
+export const BUNDLED_OUTPUT_TEMPLATES: BundledTemplateFile[] = ${JSON.stringify(bundledOutputTemplates, null, 2)};
 `;
 
 fs.writeFileSync(outFile, tsSource, 'utf-8');
 console.log(
-  `[bundle_skills_data] Bundled ${Object.keys(bundledSkills).length} skills, ${Object.keys(bundledTemplates).length} rules, and ${bundledContextTemplates.length} context templates into src/data/bundledAssets.ts`
+  `[bundle_skills_data] Bundled ${Object.keys(bundledSkills).length} skills, ${Object.keys(bundledTemplates).length} rules, ${bundledContextTemplates.length} context templates, and ${bundledOutputTemplates.length} output templates into src/data/bundledAssets.ts`
 );
