@@ -184,37 +184,51 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md text-ink-secondary">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <FileCode2
-                        className="w-4 h-4 text-ink-muted shrink-0"
-                        strokeWidth={1.5}
-                      />
-                      <span className="font-mono truncate">
-                        .agents/rules/
-                        {stage.stageId === '03'
-                          ? 'engineering-principles.md'
-                          : 'workspace-rules.md'}
-                      </span>
+                  <div className="space-y-0.5 pt-0.5">
+                    <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <FolderOpen
+                          className="w-4 h-4 text-ink-secondary shrink-0"
+                          strokeWidth={1.5}
+                        />
+                        <span className="font-mono text-ink truncate">.agents/rules</span>
+                      </div>
+                      <span className="text-[11px] text-accent shrink-0">2 份规则</span>
                     </div>
-                    <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
-                      工作区规则
-                    </span>
-                  </div>
 
-                  <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md text-ink-secondary">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <FileCode2
-                        className="w-4 h-4 text-ink-muted shrink-0"
-                        strokeWidth={1.5}
-                      />
-                      <span className="font-mono truncate">
-                        .agents/rules/coding-discipline.md
-                      </span>
+                    <div className="ml-2.5 sm:ml-4 pl-2.5 sm:pl-3 border-l border-line space-y-0.5">
+                      <div className="flex items-center justify-between gap-2 h-7 px-2 rounded-md text-ink-secondary">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <FileCode2
+                            className="w-3.5 h-3.5 text-ink-muted shrink-0"
+                            strokeWidth={1.5}
+                          />
+                          <span className="font-mono text-ink truncate">
+                            {stage.stageId === '03'
+                              ? 'engineering-principles.md'
+                              : 'workspace-rules.md'}
+                          </span>
+                        </div>
+                        <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
+                          {stage.stageId === '03' ? '工程规范' : '工作区规则'}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 h-7 px-2 rounded-md text-ink-secondary">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <FileCode2
+                            className="w-3.5 h-3.5 text-ink-muted shrink-0"
+                            strokeWidth={1.5}
+                          />
+                          <span className="font-mono text-ink truncate">
+                            coding-discipline.md
+                          </span>
+                        </div>
+                        <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
+                          编码纪律
+                        </span>
+                      </div>
                     </div>
-                    <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
-                      编码纪律
-                    </span>
                   </div>
 
                   {remainingNodes.map((node) => {

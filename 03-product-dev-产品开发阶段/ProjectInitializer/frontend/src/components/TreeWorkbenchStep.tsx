@@ -64,6 +64,7 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
 }) => {
   const [recentMovedId, setRecentMovedId] = useState<string | null>(null);
   const [contextExpanded, setContextExpanded] = useState(false);
+  const [rulesExpandedByStage, setRulesExpandedByStage] = useState<Record<string, boolean>>({});
 
   const [addForm, setAddForm] = useState<{
     stageId: StageId;
@@ -183,11 +184,19 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
 
   // Unified workspace config & rules rows rendered inside every stage card (matches Step 3 preview 1:1)
   const renderStageConfigRows = (stageId: StageId) => {
-    const rulePath =
-      stageId === '03'
-        ? '.agents/rules/engineering-principles.md'
-        : '.agents/rules/workspace-rules.md';
-    const ruleDesc = stageId === '03' ? '工程规范规则' : '工作区规则';
+    const isRulesExpanded = Boolean(rulesExpandedByStage[stageId]);
+    const toggleRules = () =>
+      setRulesExpandedByStage((prev) => ({ ...prev, [stageId]: !prev[stageId] }));
+    const stageRuleFiles = [
+      {
+        filename: stageId === '03' ? 'engineering-principles.md' : 'workspace-rules.md',
+        description: stageId === '03' ? '工程规范规则' : '工作区规则',
+      },
+      {
+        filename: 'coding-discipline.md',
+        description: '编码纪律规则（涉及编码、调试与代码评审时自动触发）',
+      },
+    ];
 
     return (
       <>
@@ -213,40 +222,82 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
           </div>
         )}
 
-        <div className="flex items-center justify-between gap-2 py-2.5 px-2.5 sm:px-3 rounded-lg hover:bg-subtle/60 transition-colors duration-150">
-          <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
-            <span
-              aria-label="必需配置"
-              className="mt-0.5 sm:mt-0 w-4 h-4 rounded flex items-center justify-center border shrink-0 bg-subtle border-line text-ink-muted"
-            >
-              <Lock className="w-2.5 h-2.5" strokeWidth={1.5} />
-            </span>
-            <FileCode2 className="mt-0.5 sm:mt-0 w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
-            <div className="min-w-0 flex-1">
-              <div className="font-mono text-xs text-ink break-words sm:truncate">{rulePath}</div>
-              <p className="text-xs text-ink-muted leading-snug sm:truncate">{ruleDesc}</p>
-            </div>
-          </div>
-        </div>
+        <div>
+          <div className="flex items-center justify-between gap-2 py-2.5 px-2.5 sm:px-3 rounded-lg hover:bg-subtle/80 transition-colors duration-150">
+            <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
+              <span
+                aria-label="必需配置"
+                className="mt-0.5 sm:mt-0 w-4 h-4 rounded flex items-center justify-center border shrink-0 bg-subtle border-line text-ink-muted"
+              >
+                <Lock className="w-2.5 h-2.5" strokeWidth={1.5} />
+              </span>
 
-        <div className="flex items-center justify-between gap-2 py-2.5 px-2.5 sm:px-3 rounded-lg hover:bg-subtle/60 transition-colors duration-150">
-          <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
-            <span
-              aria-label="必需配置"
-              className="mt-0.5 sm:mt-0 w-4 h-4 rounded flex items-center justify-center border shrink-0 bg-subtle border-line text-ink-muted"
-            >
-              <Lock className="w-2.5 h-2.5" strokeWidth={1.5} />
-            </span>
-            <FileCode2 className="mt-0.5 sm:mt-0 w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
-            <div className="min-w-0 flex-1">
-              <div className="font-mono text-xs text-ink break-words sm:truncate">
-                .agents/rules/coding-discipline.md
+              <button
+                type="button"
+                onClick={toggleRules}
+                aria-expanded={isRulesExpanded}
+                aria-label={isRulesExpanded ? '收起工作区规则文件' : '展开查看工作区规则文件'}
+                title={isRulesExpanded ? '收起规则文件' : '展开查看规则文件'}
+                className="mt-0.5 sm:mt-0 -m-1 p-1 rounded-md text-accent hover:bg-accent-soft transition-colors cursor-pointer shrink-0"
+              >
+                {isRulesExpanded ? (
+                  <FolderMinus className="w-4 h-4" strokeWidth={1.75} />
+                ) : (
+                  <FolderPlus className="w-4 h-4" strokeWidth={1.75} />
+                )}
+              </button>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                  <span className="font-mono text-xs text-ink break-words sm:truncate">
+                    .agents/rules/
+                  </span>
+                  <button
+                    type="button"
+                    onClick={toggleRules}
+                    className="text-[11px] text-accent hover:underline shrink-0 cursor-pointer"
+                  >
+                    含 {stageRuleFiles.length} 份规则
+                  </button>
+                </div>
+                <p className="text-xs text-ink-muted leading-snug sm:truncate">
+                  工作区协作规范与编码纪律规则
+                </p>
               </div>
-              <p className="text-xs text-ink-muted leading-snug sm:truncate">
-                编码纪律规则（涉及编码、调试与代码评审时自动触发）
-              </p>
             </div>
           </div>
+
+          {isRulesExpanded && (
+            <div className="animate-fade-rise ml-2.5 sm:ml-5 pl-2.5 sm:pl-3 border-l border-line space-y-0.5 py-1">
+              {stageRuleFiles.map((rf) => (
+                <div
+                  key={rf.filename}
+                  className="flex items-start justify-between gap-2 py-2 px-2 sm:px-3 rounded-lg hover:bg-subtle/60 transition-colors duration-150"
+                >
+                  <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                    <span
+                      aria-label="必需规则"
+                      className="mt-0.5 w-4 h-4 rounded flex items-center justify-center border shrink-0 bg-subtle border-line text-ink-muted"
+                    >
+                      <Lock className="w-2.5 h-2.5" strokeWidth={1.5} />
+                    </span>
+                    <FileCode2
+                      className="mt-0.5 w-4 h-4 text-ink-muted shrink-0"
+                      strokeWidth={1.5}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-mono text-xs text-ink break-words sm:truncate">
+                        {rf.filename}
+                      </div>
+                      <p className="text-xs text-ink-muted leading-relaxed">
+                        {rf.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </>
     );
