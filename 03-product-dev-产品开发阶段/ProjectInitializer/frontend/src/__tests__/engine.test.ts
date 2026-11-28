@@ -208,4 +208,47 @@ describe('V2 Pure Skeleton Engine, Dual-Mode Skills & Flat-Root ZIP', () => {
     expect(prompt).not.toContain('外层的');
     expect(buildFallbackShellScript(bundle)).toContain('#!/usr/bin/env bash');
   });
+
+  it('includes Chinese 00-08 context templates and .agents/rules/coding-discipline.md across all 6 combinations (zh/en/bilingual x antigravity/generic)', () => {
+    const bp = createInitialStageBlueprints();
+    const expectedStage02: Record<'zh' | 'en' | 'bilingual', { stage: string; ctx: string }> = {
+      zh: { stage: '02-产品设计阶段', ctx: '1-业务上下文' },
+      en: { stage: '02-product-design', ctx: '1-context' },
+      bilingual: { stage: '02-product-design-产品设计阶段', ctx: '1-context-业务上下文' },
+    };
+    const expectedStage03: Record<'zh' | 'en' | 'bilingual', string> = {
+      zh: '03-产品开发阶段',
+      en: '03-product-dev',
+      bilingual: '03-product-dev-产品开发阶段',
+    };
+
+    for (const language of ['zh', 'en', 'bilingual'] as const) {
+      for (const primaryAgent of ['antigravity', 'generic'] as const) {
+        const b = buildArtifactBundle({ ...DEFAULT_CONFIG, language, primaryAgent }, bp);
+        const s02 = expectedStage02[language];
+        const s03 = expectedStage03[language];
+
+        // All 9 Chinese 00-08 templates present regardless of language or agent
+        const ctxFiles = b.files.filter((f) => f.path.startsWith(`${s02.stage}/${s02.ctx}/`));
+        expect(ctxFiles).toHaveLength(9);
+        expect(b.fileMap[`${s02.stage}/${s02.ctx}/00-背景信息索引.md`]).toBeDefined();
+        expect(b.fileMap[`${s02.stage}/${s02.ctx}/08-术语与口径字典.md`]).toBeDefined();
+
+        // Shared rules including coding-discipline.md present for BOTH Antigravity & Generic Agent
+        expect(b.fileMap[`${s02.stage}/.agents/rules/workspace-rules.md`]).toBeDefined();
+        expect(b.fileMap[`${s02.stage}/.agents/rules/coding-discipline.md`]).toBeDefined();
+        expect(b.fileMap[`${s03}/.agents/rules/engineering-principles.md`]).toBeDefined();
+        expect(b.fileMap[`${s03}/.agents/rules/coding-discipline.md`]).toBeDefined();
+
+        // .antigravityignore is Antigravity-only
+        if (primaryAgent === 'antigravity') {
+          expect(b.fileMap[`${s02.stage}/.antigravityignore`]).toBeDefined();
+          expect(b.fileMap[`${s03}/.antigravityignore`]).toBeDefined();
+        } else {
+          expect(b.fileMap[`${s02.stage}/.antigravityignore`]).toBeUndefined();
+          expect(b.fileMap[`${s03}/.antigravityignore`]).toBeUndefined();
+        }
+      }
+    }
+  });
 });

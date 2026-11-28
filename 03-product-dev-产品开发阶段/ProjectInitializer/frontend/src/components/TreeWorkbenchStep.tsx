@@ -181,37 +181,37 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
     );
   };
 
-  // Unified Antigravity config rows rendered inside every stage card (matches Step 3 preview 1:1)
-  const renderAntigravityConfigRows = (stageId: StageId) => {
-    if (bundle.config.primaryAgent !== 'antigravity') return null;
+  // Unified workspace config & rules rows rendered inside every stage card (matches Step 3 preview 1:1)
+  const renderStageConfigRows = (stageId: StageId) => {
     const rulePath =
       stageId === '03'
         ? '.agents/rules/engineering-principles.md'
         : '.agents/rules/workspace-rules.md';
-    const ruleDesc =
-      stageId === '03' ? 'Antigravity 工程规范规则' : 'Antigravity 工作区规则';
+    const ruleDesc = stageId === '03' ? '工程规范规则' : '工作区规则';
 
     return (
       <>
-        <div className="flex items-center justify-between gap-2 py-2.5 px-2.5 sm:px-3 rounded-lg hover:bg-subtle/60 transition-colors duration-150">
-          <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
-            <span
-              aria-label="必需配置"
-              className="mt-0.5 sm:mt-0 w-4 h-4 rounded flex items-center justify-center border shrink-0 bg-subtle border-line text-ink-muted"
-            >
-              <Lock className="w-2.5 h-2.5" strokeWidth={1.5} />
-            </span>
-            <Shield className="mt-0.5 sm:mt-0 w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
-            <div className="min-w-0 flex-1">
-              <div className="font-mono text-xs text-ink break-words sm:truncate">
-                .antigravityignore
+        {bundle.config.primaryAgent === 'antigravity' && (
+          <div className="flex items-center justify-between gap-2 py-2.5 px-2.5 sm:px-3 rounded-lg hover:bg-subtle/60 transition-colors duration-150">
+            <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
+              <span
+                aria-label="必需配置"
+                className="mt-0.5 sm:mt-0 w-4 h-4 rounded flex items-center justify-center border shrink-0 bg-subtle border-line text-ink-muted"
+              >
+                <Lock className="w-2.5 h-2.5" strokeWidth={1.5} />
+              </span>
+              <Shield className="mt-0.5 sm:mt-0 w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.5} />
+              <div className="min-w-0 flex-1">
+                <div className="font-mono text-xs text-ink break-words sm:truncate">
+                  .antigravityignore
+                </div>
+                <p className="text-xs text-ink-muted leading-snug sm:truncate">
+                  Antigravity 忽略配置（空基础模板）
+                </p>
               </div>
-              <p className="text-xs text-ink-muted leading-snug sm:truncate">
-                Antigravity 忽略配置（空基础模板）
-              </p>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="flex items-center justify-between gap-2 py-2.5 px-2.5 sm:px-3 rounded-lg hover:bg-subtle/60 transition-colors duration-150">
           <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
@@ -442,8 +442,8 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
             )}
           </div>
 
-          {/* Insert Antigravity config files right after .gitignore so order matches Step 3 preview */}
-          {depth === 0 && isGitignore && renderAntigravityConfigRows(stageId)}
+          {/* Insert workspace config & rule files right after .gitignore so order matches Step 3 preview */}
+          {depth === 0 && isGitignore && renderStageConfigRows(stageId)}
 
           {/* For Stage 03 .agents/skills/, render all 13 skills with live mode-driven checkboxes */}
           {isStage03SkillsFolder && (

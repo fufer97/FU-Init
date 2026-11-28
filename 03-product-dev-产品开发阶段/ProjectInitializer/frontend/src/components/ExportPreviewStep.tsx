@@ -170,54 +170,52 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                   )}
 
                   {bundle.config.primaryAgent === 'antigravity' && (
-                    <>
-                      <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md text-ink-secondary">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <Shield
-                            className="w-4 h-4 text-ink-muted shrink-0"
-                            strokeWidth={1.5}
-                          />
-                          <span className="font-mono truncate">.antigravityignore</span>
-                        </div>
-                        <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
-                          忽略配置
-                        </span>
+                    <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md text-ink-secondary">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <Shield
+                          className="w-4 h-4 text-ink-muted shrink-0"
+                          strokeWidth={1.5}
+                        />
+                        <span className="font-mono truncate">.antigravityignore</span>
                       </div>
-
-                      <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md text-ink-secondary">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <FileCode2
-                            className="w-4 h-4 text-ink-muted shrink-0"
-                            strokeWidth={1.5}
-                          />
-                          <span className="font-mono truncate">
-                            .agents/rules/
-                            {stage.stageId === '03'
-                              ? 'engineering-principles.md'
-                              : 'workspace-rules.md'}
-                          </span>
-                        </div>
-                        <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
-                          工作区规则
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md text-ink-secondary">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <FileCode2
-                            className="w-4 h-4 text-ink-muted shrink-0"
-                            strokeWidth={1.5}
-                          />
-                          <span className="font-mono truncate">
-                            .agents/rules/coding-discipline.md
-                          </span>
-                        </div>
-                        <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
-                          编码纪律
-                        </span>
-                      </div>
-                    </>
+                      <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
+                        忽略配置
+                      </span>
+                    </div>
                   )}
+
+                  <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md text-ink-secondary">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <FileCode2
+                        className="w-4 h-4 text-ink-muted shrink-0"
+                        strokeWidth={1.5}
+                      />
+                      <span className="font-mono truncate">
+                        .agents/rules/
+                        {stage.stageId === '03'
+                          ? 'engineering-principles.md'
+                          : 'workspace-rules.md'}
+                      </span>
+                    </div>
+                    <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
+                      工作区规则
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md text-ink-secondary">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <FileCode2
+                        className="w-4 h-4 text-ink-muted shrink-0"
+                        strokeWidth={1.5}
+                      />
+                      <span className="font-mono truncate">
+                        .agents/rules/coding-discipline.md
+                      </span>
+                    </div>
+                    <span className="hidden sm:inline text-[11px] text-ink-muted shrink-0">
+                      编码纪律
+                    </span>
+                  </div>
 
                   {remainingNodes.map((node) => {
                     if (node.displayName === '.agents' && stage.stageId === '03') {

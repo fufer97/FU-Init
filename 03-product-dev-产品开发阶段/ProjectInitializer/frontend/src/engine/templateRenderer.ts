@@ -16,10 +16,6 @@ import {
 } from '../types/config';
 import { computeResolvedStageTrees, resolveDevMode } from './treeEngine';
 
-function stripFrontmatter(markdown: string): string {
-  return markdown.replace(/^---\n[\s\S]*?\n---\n+/, '').trim();
-}
-
 function renderContextTemplateContent(
   filename: string,
   checkedContextFilenames: Set<string>
@@ -54,13 +50,14 @@ function renderStageAgentsMd(
           .join('\n')
       : '| （待补充） | 按需创建子目录 |';
 
+  const rulePath =
+    stageRoot.stageId === '03'
+      ? '.agents/rules/engineering-principles.md'
+      : '.agents/rules/workspace-rules.md';
+
   const genericRulesAppendix =
     config.primaryAgent === 'generic'
-      ? `\n---\n\n## 通用协作规范\n\n${
-          stageRoot.stageId === '03'
-            ? BUNDLED_TEMPLATES.engineeringPrinciples
-            : BUNDLED_TEMPLATES.designPrinciples
-        }\n\n---\n\n${stripFrontmatter(BUNDLED_TEMPLATES.codingDiscipline)}\n`
+      ? `\n---\n\n## 工作区规则文件\n\n- 请同时遵循本工作区内的 \`${rulePath}\` 与 \`.agents/rules/coding-discipline.md\`。\n`
       : '';
 
   if (stageRoot.stageId === '02') {
@@ -343,29 +340,30 @@ export function buildArtifactBundle(
         stageId,
         description: 'Antigravity 忽略文件（空基础模板）',
       });
-
-      const ruleName =
-        stageId === '03' ? 'engineering-principles.md' : 'workspace-rules.md';
-      const ruleBody =
-        stageId === '03'
-          ? BUNDLED_TEMPLATES.engineeringPrinciples
-          : BUNDLED_TEMPLATES.designPrinciples;
-      files.push({
-        path: `${stageRoot.relativePath}/.agents/rules/${ruleName}`,
-        content: ruleBody,
-        category: 'agent-config',
-        stageId,
-        description: 'Antigravity 工作区规则',
-      });
-
-      files.push({
-        path: `${stageRoot.relativePath}/.agents/rules/coding-discipline.md`,
-        content: BUNDLED_TEMPLATES.codingDiscipline,
-        category: 'agent-config',
-        stageId,
-        description: '编码纪律规则（涉及写代码/改代码时自动触发）',
-      });
     }
+
+    // Shared workspace rules & coding discipline for BOTH Antigravity 2.0 and Generic Agents
+    const ruleName =
+      stageId === '03' ? 'engineering-principles.md' : 'workspace-rules.md';
+    const ruleBody =
+      stageId === '03'
+        ? BUNDLED_TEMPLATES.engineeringPrinciples
+        : BUNDLED_TEMPLATES.designPrinciples;
+    files.push({
+      path: `${stageRoot.relativePath}/.agents/rules/${ruleName}`,
+      content: ruleBody,
+      category: 'agent-config',
+      stageId,
+      description: stageId === '03' ? '工程规范规则' : '工作区规则',
+    });
+
+    files.push({
+      path: `${stageRoot.relativePath}/.agents/rules/coding-discipline.md`,
+      content: BUNDLED_TEMPLATES.codingDiscipline,
+      category: 'agent-config',
+      stageId,
+      description: '编码纪律规则（涉及写代码/改代码时自动触发）',
+    });
 
     // For stage 03, inject all active skills into .agents/skills/<skillName>/
     if (stageId === '03') {
