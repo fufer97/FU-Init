@@ -92,6 +92,58 @@ export function getActiveSkillsForMode(devMode: 'full' | 'linked'): SkillMeta[] 
  * Pure skeleton blueprints with ZERO pre-baked business content.
  * All business docs, context files, templates, prompts, and PRDs are created interactively with the local Agent.
  */
+const CONTEXT_TEMPLATE_NODES_META: Array<{
+  id: string;
+  filename: string;
+  description: string;
+}> = [
+  {
+    id: '02-ctx-00',
+    filename: '00-背景信息索引.md',
+    description: '总索引、状态表、按任务按需读取路由与权威层级',
+  },
+  {
+    id: '02-ctx-01',
+    filename: '01-领域知识与产品形态.md',
+    description: '产品定位、核心特征、页面骨架模式与交互/控件规范',
+  },
+  {
+    id: '02-ctx-02',
+    filename: '02-组织与业务背景.md',
+    description: '团队概况、角色分工、核心痛点、场景频次与一期判断',
+  },
+  {
+    id: '02-ctx-03',
+    filename: '03-上下游与系统边界.md',
+    description: '关联方/外部系统、数据输入输出关系与系统能力边界',
+  },
+  {
+    id: '02-ctx-04',
+    filename: '04-功能模块与数据依赖.md',
+    description: '分期模块清单（一期/轻/二期）与模块间数据依赖图',
+  },
+  {
+    id: '02-ctx-05',
+    filename: '05-核心对象与编码操作规范.md',
+    description: '对象分层、编号前缀规则、通用操作动词与主数据通则',
+  },
+  {
+    id: '02-ctx-06',
+    filename: '06-核心业务场景与流程.md',
+    description: '场景拆解框架、Mermaid 主流程/异常分支与业务规则表',
+  },
+  {
+    id: '02-ctx-07',
+    filename: '07-项目边界与业务约束.md',
+    description: 'In/Out Scope、轻支持清单、硬性约束汇总与跨模块通则',
+  },
+  {
+    id: '02-ctx-08',
+    filename: '08-术语与口径字典.md',
+    description: '核心对象、业务动作、指标口径与操作动词统一字典',
+  },
+];
+
 export function createInitialStageBlueprints(): Record<StageId, StageBlueprint> {
   const makeGitignoreNode = (stageId: StageId): TreeNode => ({
     id: `${stageId}-gitignore`,
@@ -185,7 +237,19 @@ export function createInitialStageBlueprints(): Record<StageId, StageBlueprint> 
       numbered: true,
       checked: true,
       description: '存放项目背景、业务规则与跨模块约定',
-      children: [],
+      children: CONTEXT_TEMPLATE_NODES_META.map((item) => ({
+        id: item.id,
+        stageId: '02',
+        kind: 'file',
+        level: 3,
+        nameZh: item.filename,
+        nameEn: item.filename,
+        numbered: false,
+        checked: true,
+        locked: false,
+        description: item.description,
+        templateKey: `context-template:${item.filename}`,
+      })),
     },
     {
       id: '02-template',

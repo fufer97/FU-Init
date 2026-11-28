@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ResolvedArtifactBundle } from '../types/config';
-import { BUNDLED_CONTEXT_TEMPLATES } from '../data/bundledAssets';
 import {
   buildAgentOpeningPrompt,
   buildFallbackShellScript,
@@ -283,9 +282,17 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                       );
                     }
 
-                    const activeSubfolders = node.children.filter((ch) => ch.checked);
-                    const hasContextTemplates = node.id === '02-context';
-                    const showOpenFolder = activeSubfolders.length > 0 || hasContextTemplates;
+                    const activeSubfolders = node.children.filter(
+                      (ch) => ch.checked && ch.kind === 'folder'
+                    );
+                    const checkedContextTemplates = node.children.filter(
+                      (ch) =>
+                        ch.checked &&
+                        ch.kind === 'file' &&
+                        ch.templateKey?.startsWith('context-template:')
+                    );
+                    const showOpenFolder =
+                      activeSubfolders.length > 0 || checkedContextTemplates.length > 0;
                     return (
                       <div key={node.id} className="space-y-0.5">
                         <div className="flex items-center justify-between gap-2 h-8 px-2 rounded-md">
@@ -305,18 +312,18 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                               {node.displayName}
                             </span>
                           </div>
-                          {hasContextTemplates && (
+                          {checkedContextTemplates.length > 0 && (
                             <span className="text-[11px] text-accent shrink-0">
-                              {BUNDLED_CONTEXT_TEMPLATES.length} 份模板
+                              {checkedContextTemplates.length} 份模板
                             </span>
                           )}
                         </div>
 
-                        {hasContextTemplates && (
+                        {checkedContextTemplates.length > 0 && (
                           <div className="ml-2.5 sm:ml-4 pl-2.5 sm:pl-3 border-l border-line space-y-0.5">
-                            {BUNDLED_CONTEXT_TEMPLATES.map((tpl) => (
+                            {checkedContextTemplates.map((tpl) => (
                               <div
-                                key={tpl.filename}
+                                key={tpl.id}
                                 className="flex items-center justify-between gap-2 h-7 px-2 rounded-md text-ink-secondary"
                               >
                                 <div className="flex items-center gap-2 min-w-0">
@@ -325,7 +332,7 @@ export const ExportPreviewStep: React.FC<ExportPreviewStepProps> = ({
                                     strokeWidth={1.5}
                                   />
                                   <span className="font-mono text-ink truncate">
-                                    {tpl.filename}
+                                    {tpl.displayName}
                                   </span>
                                 </div>
                               </div>

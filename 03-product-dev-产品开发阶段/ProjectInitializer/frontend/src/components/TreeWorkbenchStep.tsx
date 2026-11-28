@@ -16,6 +16,7 @@ import {
   FileCode2,
   FileText,
   Folder,
+  FolderMinus,
   FolderOpen,
   FolderPlus,
   Lock,
@@ -62,6 +63,7 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
   onNextToExport,
 }) => {
   const [recentMovedId, setRecentMovedId] = useState<string | null>(null);
+  const [contextExpanded, setContextExpanded] = useState(false);
 
   const [addForm, setAddForm] = useState<{
     stageId: StageId;
@@ -263,6 +265,15 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
       const canMoveDown = node.numbered && idx < nodes.length - 1;
       const isFlashing = recentMovedId === node.id;
       const isGitignore = node.templateKey === 'stage-gitignore';
+      const isContextTemplateFile = Boolean(node.templateKey?.startsWith('context-template:'));
+      const isContextFolder = node.id === '02-context';
+      const contextTemplateChildren = isContextFolder
+        ? node.children.filter((c) => c.templateKey?.startsWith('context-template:'))
+        : [];
+      const customFolderChildren = isContextFolder
+        ? node.children.filter((c) => !c.templateKey?.startsWith('context-template:'))
+        : node.children;
+      const checkedContextCount = contextTemplateChildren.filter((c) => c.checked).length;
       const isStage03SkillsFolder =
         stageId === '03' && node.displayName === '.agents' && node.kind === 'folder';
 
@@ -299,7 +310,24 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
                 )}
               </button>
 
-              {isStage03SkillsFolder ? (
+              {isContextFolder ? (
+                <button
+                  type="button"
+                  onClick={() => setContextExpanded((v) => !v)}
+                  aria-expanded={contextExpanded}
+                  aria-label={
+                    contextExpanded ? '收起 00–08 背景模板' : '展开查看并勾选 00–08 背景模板'
+                  }
+                  title={contextExpanded ? '收起 00–08 背景模板' : '展开查看 00–08 背景模板'}
+                  className="mt-0.5 sm:mt-0 -m-1 p-1 rounded-md text-accent hover:bg-accent-soft transition-colors cursor-pointer shrink-0"
+                >
+                  {contextExpanded ? (
+                    <FolderMinus className="w-4 h-4" strokeWidth={1.75} />
+                  ) : (
+                    <FolderPlus className="w-4 h-4" strokeWidth={1.75} />
+                  )}
+                </button>
+              ) : isStage03SkillsFolder ? (
                 <FolderOpen className="mt-0.5 sm:mt-0 w-4 h-4 text-accent/80 shrink-0" strokeWidth={1.5} />
               ) : node.kind === 'folder' ? (
                 <Folder className="mt-0.5 sm:mt-0 w-4 h-4 text-accent/80 shrink-0" strokeWidth={1.5} />
@@ -316,10 +344,14 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
                       ? '.agents/skills/'
                       : `${node.displayName}${node.kind === 'folder' ? '/' : ''}`}
                   </span>
-                  {node.id === '02-context' && node.checked && (
-                    <span className="text-[11px] text-accent shrink-0">
-                      含 00–08 背景模板
-                    </span>
+                  {isContextFolder && node.checked && contextTemplateChildren.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setContextExpanded((v) => !v)}
+                      className="text-[11px] text-accent hover:underline shrink-0 cursor-pointer"
+                    >
+                      已选 {checkedContextCount} / {contextTemplateChildren.length} 份背景模板
+                    </button>
                   )}
                   {node.level >= 3 && node.kind === 'folder' && node.checked && (
                     <span className="text-[11px] text-accent font-mono shrink-0">
@@ -338,7 +370,7 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
               </div>
             </div>
 
-            {!node.locked && !isGitignore && (
+            {!node.locked && !isGitignore && !isContextTemplateFile && (
               <div className="flex items-center gap-1 ml-auto opacity-85 sm:opacity-70 group-hover:opacity-100 transition-opacity duration-150 shrink-0">
                 {node.numbered && (
                   <>
@@ -513,10 +545,53 @@ export const TreeWorkbenchStep: React.FC<TreeWorkbenchStepProps> = ({
             </form>
           )}
 
+          {/* Expandable 00-08 universal context templates under 1-context */}
+          {isContextFolder && node.checked && contextExpanded && contextTemplateChildren.length > 0 && (
+            <div className="animate-fade-rise ml-2.5 sm:ml-5 pl-2.5 sm:pl-3 border-l border-line space-y-0.5 py-1">
+              {contextTemplateChildren.map((tpl) => (
+                <div
+                  key={tpl.id}
+                  className={`flex items-start justify-between gap-2 py-2 px-2 sm:px-3 rounded-lg transition-opacity duration-150 ${
+                    tpl.checked ? 'hover:bg-subtle/70 opacity-100' : 'opacity-45 hover:opacity-75'
+                  }`}
+                >
+                  <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                    <button
+                      type="button"
+                      onClick={() => onToggleNode(stageId, tpl.id)}
+                      aria-label={`切换 ${tpl.displayName}`}
+                      className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center border shrink-0 transition-colors duration-150 cursor-pointer ${
+                        tpl.checked
+                          ? 'bg-accent border-accent text-white animate-check-pop'
+                          : 'border-ink-muted/50 bg-surface'
+                      }`}
+                    >
+                      {tpl.checked && <Check className="w-3 h-3" strokeWidth={2.5} />}
+                    </button>
+
+                    <FileText
+                      className="mt-0.5 w-4 h-4 text-ink-muted shrink-0"
+                      strokeWidth={1.5}
+                    />
+
+                    <div className="min-w-0 flex-1">
+                      <div className="font-mono text-xs text-ink break-words sm:truncate">
+                        {tpl.displayName}
+                      </div>
+                      <p className="text-xs text-ink-muted leading-relaxed">
+                        {tpl.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           {node.kind === 'folder' &&
             node.checked &&
-            node.children.length > 0 &&
-            renderTreeNodes(node.children, stageId, depth + 1)}
+            customFolderChildren.length > 0 &&
+            renderTreeNodes(customFolderChildren, stageId, depth + 1)}
         </div>
       );
     });

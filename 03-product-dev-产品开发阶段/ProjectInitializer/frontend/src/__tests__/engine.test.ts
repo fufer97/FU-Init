@@ -76,6 +76,22 @@ describe('V2 Pure Skeleton Engine, Dual-Mode Skills & Flat-Root ZIP', () => {
       expect(file.content).not.toContain('进销存');
     }
 
+    // Individual 00-08 context template toggling excludes unchecked files & updates 00 index
+    const toggledCtxNodes = toggleTreeNodeChecked(bp['02'].nodes, '02-ctx-03');
+    const partialCtxBundle = buildArtifactBundle(DEFAULT_CONFIG, {
+      ...bp,
+      '02': { ...bp['02'], nodes: toggledCtxNodes },
+    });
+    expect(
+      partialCtxBundle.fileMap['02-product-design-产品设计阶段/1-context-业务上下文/03-上下游与系统边界.md']
+    ).toBeUndefined();
+    expect(
+      partialCtxBundle.fileMap['02-product-design-产品设计阶段/1-context-业务上下文/00-背景信息索引.md'].content
+    ).not.toContain('03-上下游与系统边界.md');
+    expect(
+      partialCtxBundle.fileMap['02-product-design-产品设计阶段/1-context-业务上下文/08-术语与口径字典.md']
+    ).toBeDefined();
+
     // No pre-baked business PRDs/handoffs in other folders
     expect(
       bundle.files.some((f) => f.path.includes('PRD模板.md') || f.path.includes('HANDOFF.md'))

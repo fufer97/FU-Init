@@ -20,6 +20,26 @@ function stripFrontmatter(markdown: string): string {
   return markdown.replace(/^---\n[\s\S]*?\n---\n+/, '').trim();
 }
 
+function renderContextTemplateContent(
+  filename: string,
+  checkedContextFilenames: Set<string>
+): string {
+  const entry = BUNDLED_CONTEXT_TEMPLATES.find((t) => t.filename === filename);
+  if (!entry) return `# ${filename}\n`;
+  if (filename !== '00-背景信息索引.md') {
+    return entry.content;
+  }
+  // Keep 00-背景信息索引.md table rows in sync with the user's checked context templates
+  return entry.content
+    .split('\n')
+    .filter((line) => {
+      const match = line.match(/^\|\s*0[0-8]\s*\|\s*`([^`]+)`\s*\|/);
+      if (!match) return true;
+      return checkedContextFilenames.has(match[1]);
+    })
+    .join('\n');
+}
+
 function renderStageAgentsMd(
   stageRoot: ResolvedTreeNode,
   config: ProjectInitConfig,
@@ -45,9 +65,19 @@ function renderStageAgentsMd(
 
   if (stageRoot.stageId === '02') {
     const contextFolder = checkedL2Folders.find((f) => f.id === '02-context');
-    const contextHint = contextFolder
-      ? `- **先读背景总索引**：进入本工作区后先阅读 \`${contextFolder.displayName}/00-背景信息索引.md\`，通过提问逐步协助用户将 \`01\`–\`08\` 通用模板中的 \`【待确认】\` 内容补全，并遵循权威层级 \`context/ > template/ > prd/\`。`
-      : '';
+    const checkedContextTemplates =
+      contextFolder?.children.filter(
+        (c) => c.checked && c.templateKey?.startsWith('context-template:')
+      ) || [];
+    const hasIndexFile = checkedContextTemplates.some(
+      (c) => c.displayName === '00-背景信息索引.md'
+    );
+    const contextHint =
+      contextFolder && checkedContextTemplates.length > 0
+        ? hasIndexFile
+          ? `- **先读背景总索引**：进入本工作区后先阅读 \`${contextFolder.displayName}/00-背景信息索引.md\`，通过提问逐步协助用户将已选的 ${checkedContextTemplates.length} 份背景模板中的 \`【待确认】\` 内容补全，并遵循权威层级 \`context/ > template/ > prd/\`。`
+          : `- **补全背景模板**：\`${contextFolder.displayName}/\` 已预置 ${checkedContextTemplates.length} 份通用背景模板，请通过提问逐步协助用户补全其中的 \`【待确认】\` 内容，并遵循权威层级 \`context/ > template/ > prd/\`。`
+        : '';
 
     return `# AGENTS.md — ${stageRoot.displayName}
 
@@ -172,9 +202,14 @@ function renderBootstrapMd(
 
   if (stage02) {
     const contextNode = stage02.children.find((c) => c.id === '02-context' && c.checked);
-    const contextStep = contextNode
-      ? `2. \`${stage02.displayName}/${contextNode.displayName}/\` 已预置 \`00\`–\`08\` 通用业务背景模板（均为 \`⚪ 待填充\`），请通过提问了解用户项目背景与目标，逐步补全模板内容并同步更新 \`00-背景信息索引.md\` 状态。`
-      : `2. 通过对话向用户了解项目背景与目标，再按需在业务上下文与需求文档目录下生成文档。`;
+    const checkedContextCount =
+      contextNode?.children.filter(
+        (c) => c.checked && c.templateKey?.startsWith('context-template:')
+      ).length || 0;
+    const contextStep =
+      contextNode && checkedContextCount > 0
+        ? `2. \`${stage02.displayName}/${contextNode.displayName}/\` 已预置 ${checkedContextCount} 份通用业务背景模板（均为 \`⚪ 待填充\`），请通过提问了解用户项目背景与目标，逐步补全模板内容。`
+        : `2. 通过对话向用户了解项目背景与目标，再按需在业务上下文与需求文档目录下生成文档。`;
     steps.push(
       `### ${stage02.displayName}\n1. 用 ${agentName} 直接打开 \`${stage02.displayName}/\` 作为工作区，先读 \`AGENTS.md\`。\n${contextStep}${
         stage03
@@ -349,6 +384,13 @@ export function buildArtifactBundle(
       }
     }
 
+    const contextFolderNode = stageRoot.children.find((c) => c.id === '02-context');
+    const checkedContextFilenames = new Set(
+      (contextFolderNode?.children || [])
+        .filter((c) => c.checked && c.templateKey?.startsWith('context-template:'))
+        .map((c) => c.displayName)
+    );
+
     function walkNodes(nodes: ResolvedTreeNode[]) {
       for (const node of nodes) {
         if (!node.checked) continue;
@@ -370,6 +412,15 @@ export function buildArtifactBundle(
               stageId,
               description: 'Git 通用忽略规则',
             });
+          } else if (node.templateKey?.startsWith('context-template:')) {
+            const filename = node.templateKey.slice('context-template:'.length);
+            files.push({
+              path: node.relativePath,
+              content: renderContextTemplateContent(filename, checkedContextFilenames),
+              category: 'custom',
+              stageId,
+              description: node.description,
+            });
           } else {
             files.push({
               path: node.relativePath,
@@ -381,19 +432,6 @@ export function buildArtifactBundle(
           }
         } else if (node.kind === 'folder') {
           if (node.displayName === '.agents') continue;
-
-          // Stage 02 context folder: populate 00-08 universal context templates
-          if (node.id === '02-context') {
-            for (const tpl of BUNDLED_CONTEXT_TEMPLATES) {
-              files.push({
-                path: `${node.relativePath}/${tpl.filename}`,
-                content: tpl.content,
-                category: 'custom',
-                stageId,
-                description: '通用项目背景模板（初始化后由 Agent 引导补全）',
-              });
-            }
-          }
 
           walkNodes(node.children);
 
