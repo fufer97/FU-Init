@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { HeroBlueprint } from './HeroBlueprint';
+import authorAvatar from '../assets/author-fufu.jpg';
 
 interface AtlasLandingProps {
   onStartBuild: () => void;
@@ -90,7 +91,14 @@ export const AtlasLanding: React.FC<AtlasLandingProps> = ({ onStartBuild }) => {
         <footer className="border-t border-line">
           <div className="max-w-5xl mx-auto px-5 sm:px-6 py-5 sm:py-6 flex items-center justify-between text-xs text-ink-muted">
             <span>一键项目初始化</span>
-            <span>作者：fufu</span>
+            <div className="flex items-center gap-2">
+              <img
+                src={authorAvatar}
+                alt="fufu"
+                className="w-5 h-5 rounded-full object-cover ring-1 ring-line shrink-0"
+              />
+              <span>作者：fufu</span>
+            </div>
           </div>
         </footer>
       </section>

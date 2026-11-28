@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActiveStep } from '../types/config';
+import authorAvatar from '../assets/author-fufu.jpg';
 
 interface TopNavProps {
   activeStep: ActiveStep;
@@ -14,9 +15,14 @@ export const TopNav: React.FC<TopNavProps> = ({ activeStep, onSelectStep }) => {
           <span className="text-sm font-medium tracking-tight text-ink">
             一键项目初始化
           </span>
-          <span className="text-xs text-ink-muted">
-            作者：fufu
-          </span>
+          <div className="flex items-center gap-2 text-xs text-ink-muted">
+            <img
+              src={authorAvatar}
+              alt="fufu"
+              className="w-6 h-6 rounded-full object-cover ring-1 ring-line shrink-0"
+            />
+            <span>作者：fufu</span>
+          </div>
         </div>
       </header>
     );
